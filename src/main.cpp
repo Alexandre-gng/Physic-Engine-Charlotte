@@ -1,14 +1,4 @@
-#include <iostream>
-#include <math.h>
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "shaderClass.h"
-#include "cameraClass.h"
+#include "includeHeader.hpp"
 
 using namespace std;
 
@@ -16,6 +6,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 /*
+ * STARTING 08/11/2024
  * ETAPES:
  *      -> Implémenter en 3D sous OPENGL
  *      -> Ajouter le PBD en 2D
@@ -30,9 +21,18 @@ const unsigned int SCR_HEIGHT = 600;
  *                              => update_vel()  update_pose()
  *
  *   -> "physicClass"  =>  contient une liste de l'ensemble des particules
- *                       =>  update l'ensemble des particules() + apply_grav() + apply_frict()
+ *                     =>  update l'ensemble des particules() + apply_grav() + apply_frict()
+ *                     =>  Appelle les méthodes 'solveConstraints()' de chaque objet
  *
  *   -> "renderClass"  => Créer un objet associé
+ *
+ *   -> "physicClass"  =>  contient une liste de l'ensemble des particules qui compose un objet
+ *                     =>  Booléen: moving, rendering
+ *                     =>
+ *
+ *   -> "objectClass"  =>  Contient une liste de Particle
+ *                     =>  Contient pleins de sous classes (wall, rope, cube, sphere ..)
+ *
 */
 
 float vertices[] = {
