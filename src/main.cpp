@@ -1,4 +1,4 @@
-#include "includeHeader.hpp"
+#include "../include/common.hpp"
 
 using namespace std;
 
@@ -8,32 +8,13 @@ const unsigned int SCR_HEIGHT = 600;
 /*
  * STARTING 08/11/2024
  * ETAPES:
- *      -> Implémenter en 3D sous OPENGL
- *      -> Ajouter le PBD en 2D
- *      -> L'implémenter en 3D
-*           -> Ajouter la gestion des colisions Soft/ Solid_not_moving
-*           -> Ajouter solid / solid
- *
- *
- * CLOTH IN 3D:
- *   -> "particleClass"  =>  contient pos, vel, acc...
- *                       =>  contient des fonctions uniques et intrasèques à chaque particule
- *                              => update_vel()  update_pose()
- *
- *   -> "physicClass"  =>  contient une liste de l'ensemble des particules
- *                     =>  update l'ensemble des particules() + apply_grav() + apply_frict()
- *                     =>  Appelle les méthodes 'solveConstraints()' de chaque objet
- *
- *   -> "renderClass"  => Créer un objet associé
- *
- *   -> "physicClass"  =>  contient une liste de l'ensemble des particules qui compose un objet
- *                     =>  Booléen: moving, rendering
- *                     =>
- *
- *   -> "objectClass"  =>  Contient une liste de Particle
- *                     =>  Contient pleins de sous classes (wall, rope, cube, sphere ..)
+ *      - Mettre à jour Physic
+ *      - Mettre à jour StretchingConstraint
+ *      - Mettre à jour Particle:
+ *          -> Classe Render ?
  *
 */
+
 
 float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -119,7 +100,6 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LEARNOPENGL",NULL, NULL);
-
 
     glfwMakeContextCurrent(window);
     glfwSetCursorPosCallback(window, mouse_callback);

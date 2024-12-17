@@ -7,22 +7,41 @@ set(CMAKE_CXX_STANDARD 17)
 # Rechercher OpenGL
 find_package(OpenGL REQUIRED)
 
-# Adding include directories
-set(GLFW_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+# Adding dependencies directories
+set(GLFW_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies")
 set(GLFW_LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
-set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/glad")
-set(GLM_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/glm")
+set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/glad")
+set(GLM_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/glm")
 
 # Ajouter les fichiers sources
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/glad.c
-        src/shaderClass.hpp
-        src/cameraClass.hpp
-        src/physicClass.hpp
-        src/particleClass.hpp
-        src/includeHeader.hpp
-        src/objectClass.hpp)
+        include/OPENGL/shaderClass.hpp
+        include/OPENGL/cameraClass.hpp
+
+        include/Objects/ClassCloth.hpp
+        include/Objects/ClassWall.hpp
+        include/Objects/ClassObject.hpp
+
+        include/Constraints/ClassConstraint.hpp
+        include/Constraints/ClassRigidBodyColConstraint.hpp
+        include/Constraints/ClassStretchingConstraint.hpp
+
+        include/ClassParticle.hpp
+        include/ClassPhysic.hpp
+
+        include/common.hpp
+        include/ClassJoint.hpp
+        include/ClassTriangle.hpp
+        src/Cloth.cpp
+        src/Joint.cpp
+        src/Object.cpp
+        src/Particle.cpp
+        src/Physic.cpp
+        src/RigidBodyColConstraint.cpp
+        src/StretchingConstraint.cpp
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})
 
