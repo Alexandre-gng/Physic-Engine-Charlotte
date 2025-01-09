@@ -17,8 +17,7 @@
 class Renderer {
 public:
     vector<unsigned int> VAOs;
-    vector<unsigned int> VBOs_moving;
-    unsigned int VBO_immuable;
+    vector<int> VAO_lenghts;
 
     Shader shader;
 
@@ -27,7 +26,7 @@ public:
 
     ~Renderer() = default;
 
-    // Adds a moving Object to the engine (new VBO)
+    // Adds a moving Object to the engine (Creating a new VBO/ VAO for each)
     void add_moving_Object(Object* ptr_O) {
         unsigned int new_VAO;
         unsigned int new_VBO;
@@ -76,42 +75,41 @@ public:
                 index += 5;
             }
         }
-        /* YYY JE GARDE AU CAS OU
-        for (int i=0; i < sizeof(ptr_O->LIST_particles); i++) {
-            if (ptr_O->LIST_particles[i] == nullptr) {
-                continue;
-            }
-            vertices[i] = ptr_O->LIST_particles[i]->pos.x;
-            vertices[i+1] = ptr_O->LIST_particles[i]->pos.y;
-            vertices[i+2] = ptr_O->LIST_particles[i]->pos.z;
-            vertices[i+3] = float((i%2) + 1);
-            vertices[i+4] = float(i%2);
-        }
-         */
+        VAO_lenghts.push_back(index);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
         glEnableVertexAttribArray(1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        VAOs.push_back(new_VAO);
     };
 
     // Adds an immuable Object to the engine (Reusing the same VBO for these)
     void add_immuable_Object(vector<Object*> LIST_objects) {
-
     };
 
 
     // Initilisation of OPENGL (shaders, buffers, glfw window...)
-    void init();
+    void init() {
+
+    }
 
     // Parcourt la liste des VAO, et les bind et affiche
     void render() {
         shader.use();  // Activer le shader
+        int index = 0;
         for (unsigned int VAO : VAOs) {
             glBindVertexArray(VAO);
             // TROP RESTRICTIF: par exemple si c'est un cube, on Draw Arrays par 36, non par 6
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+            glDrawArrays(GL_TRIANGLES, 0, VAO_lenghts[index] /5);
+            index++;
         }
         glBindVertexArray(0);
     };

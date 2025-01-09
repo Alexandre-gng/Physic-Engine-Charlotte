@@ -29,6 +29,12 @@ const unsigned int SCR_HEIGHT = 600;
  *      -> Classe Render:
  *          -
  *
+ * AMELIORATIONS:
+ *     - Passer pas glDrawElements() dans render, et utiliser des EBO
+ *     - Se questionner sur l'utilité de la classe Joint
+ *     - Utiliser une hashmap pour la détection des triangles voisins
+ *          => est ce mieux?
+ *
 */
 
 // Coords for only one cube
