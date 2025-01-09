@@ -1,11 +1,11 @@
-#include "../include/Objects/ClassCloth.hpp"
-#include "../../OPENGL/include/ClassParticle.hpp"
+#include "../include/Objects/Cloth.hpp"
+#include "../../OPENGL/include/Particle.hpp"
 
 
-// Delete a Particle in the Cloth, and all of the Triangle and Joint that contain it
+// Delete a Particle in the Cloth, and all the Triangle and Joint that contain it
 void Cloth::supp_Particle(Particle* ptr_P) {
     cout << "start supp particl"<< endl;
-    // Delete all of the ptr_T concerned in the Cloth->TABtriangles
+    // Delete all the ptr_T concerned in the Cloth->TABtriangles
     for (auto& row_T: this->TAB_triangles) {
         for (auto& ptr_T: row_T) {
             if (ptr_T != nullptr) {
@@ -19,7 +19,7 @@ void Cloth::supp_Particle(Particle* ptr_P) {
         }
     }
 
-    // Delete the ptr_P in the Cloth->TABparticles
+    // Delete the ptr_P in the Cloth->LIST_particles
     for (auto it = this->LIST_particles.begin(); it != this->LIST_particles.end(); it++) {
         if (*it == ptr_P) {
             this->LIST_particles.erase(it);
@@ -29,7 +29,7 @@ void Cloth::supp_Particle(Particle* ptr_P) {
 
     // Delete the reference of the neighbour triangles of ptr_P
     for (Triangle *ptr_T: ptr_P->list_triangles_friends) {
-        int l1 = 0, l2 = 0, l3 = 0;
+        int l1 = 0, l2 = 0, l3 = 0; // YYY
         for (Triangle *ptr_T_neighbour: ptr_T->list_nearest_triangles) {
             if (ptr_T_neighbour != nullptr) {
                 int cpt = 0;

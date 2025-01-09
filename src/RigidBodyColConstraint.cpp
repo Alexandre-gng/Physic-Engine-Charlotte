@@ -1,6 +1,6 @@
-#include "../include/Constraints/ClassRigidBodyColConstraint.hpp"
-#include "../../OPENGL/include/ClassParticle.hpp"
-#include "../include/Objects/ClassObject.hpp"
+#include "../include/Constraints/RigidBodyColConstraint.hpp"
+#include "../../OPENGL/include/Particle.hpp"
+#include "../include/Objects/Object.hpp"
 
 
 void RigidBodyCollisionConstraint::apply() {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ClassConstraint.hpp"
+#include "Constraint.hpp"
 
 class Object;
 
@@ -10,7 +10,7 @@ class Object;
 
 class StretchingConstraint : public Constraint {
 public:
-    int distance{};
+    int distance;
 
     void apply() override;
 

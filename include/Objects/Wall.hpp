@@ -3,10 +3,9 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include "SFML/Graphics.hpp"
-#include "ClassObject.hpp"
-#include "../ClassParticle.hpp"
-#include "../ClassJoint.hpp"
+#include "Object.hpp"
+#include "../Particle.hpp"
+#include "../Joint.hpp"
 
 class Wall : public Object {
 public:
@@ -19,11 +18,11 @@ public:
         return;
     }
 
-    Wall(int x, int y, int w, int h, float d, float m_p, float frict): friction(frict), w(w), h(h), Object(WALL, 2, 2, 1, 2) {
-        Particle* ptr_NewP1 = new Particle(x, y, m_p);
-        Particle* ptr_NewP2 = new Particle(x+w, y, m_p);
-        Particle* ptr_NewP3 = new Particle(x, y+h, m_p);
-        Particle* ptr_NewP4 = new Particle(x+w, y+h, m_p);
+    Wall(int x, int y, int z, int w, int h, float d, float m_p, float frict): friction(frict), w(w), h(h), Object(WALL, 2, 2, 1, 2) {
+        Particle* ptr_NewP1 = new Particle(x, y, z, m_p);
+        Particle* ptr_NewP2 = new Particle(x+w, y, z, m_p);
+        Particle* ptr_NewP3 = new Particle(x, y+h, z, m_p);
+        Particle* ptr_NewP4 = new Particle(x+w, y+h, z, m_p);
         LIST_particles[0] = ptr_NewP1;
         LIST_particles[1] = ptr_NewP2;
         LIST_particles[2] = ptr_NewP3;

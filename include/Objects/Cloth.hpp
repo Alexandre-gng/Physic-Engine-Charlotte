@@ -4,13 +4,13 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include "ClassObject.hpp"
-#include "../ClassParticle.hpp"
-#include "../ClassJoint.hpp"
-#include "../Constraints/ClassStretchingConstraint.hpp"
+#include "Object.hpp"
+#include "../Particle.hpp"
+#include "../Joint.hpp"
+#include "../Constraints/StretchingConstraint.hpp"
 
 using namespace std;
-using Eigen::MatrixXd;
+//using Eigen::MatrixXd;
 
 /*
  * Contraintes:
@@ -31,10 +31,6 @@ public:
     unsigned int number_p;
 
 
-    void update() override {
-        cout << "heheh "<< endl;
-    }
-
     // REFAIRE AVEC L'ALGO YYY
     void supp_Particle(Particle* ptr_P) override;
 
@@ -44,7 +40,7 @@ public:
     : default_lenght(d), mass_particles(m_p), width(w), height(h), number_p(w*h), Object(CLOTH, h, w, h, w*2) {
 
         // Adding the Stretching constraint
-        constraints_list.push_back(std::make_shared<StretchingConstraint>(default_lenght, this));
+        LIST_constraints.push_back(std::make_shared<StretchingConstraint>(default_lenght, this));
 
         // Create all the Particle in the Cloth_TAB
         glm::vec3 last_pos = {float(x), float(y), float(z)};
@@ -54,22 +50,23 @@ public:
                 if (i != 0) {
                     last_pos = this->LIST_particles[(i-1)*w + j]->pos;
                 } else {
-                    last_pos = {float(x + i*default_lenght), float(y)};
+                    last_pos = {float(x + i*default_lenght), y, z};
                 }
                 if (j%2 == 0) {
                     if (i == h-1) {
-                        ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, y + j * (default_lenght * sqrt(3) / 2), m_p);
+                        // Conversion int to float YYY in default_lenght
+                        ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, y + j * (default_lenght * sqrt(3) / 2), z, m_p);
                         last_pos = ptr_NewP->pos;
                     } else {
-                        ptr_NewP = new Particle(last_pos.x + default_lenght, y + j * (default_lenght * sqrt(3) / 2), m_p);
+                        ptr_NewP = new Particle(last_pos.x + default_lenght, y + j * (default_lenght * sqrt(3) / 2), z, m_p);
                         last_pos = ptr_NewP->pos;
                     }
                 } else {
                     if (i == 1) {
-                        ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, y + j * (default_lenght * sqrt(3) / 2), m_p);
+                        ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, y + j * (default_lenght * sqrt(3) / 2), z, m_p);
                         last_pos = ptr_NewP->pos;
                     } else {
-                        ptr_NewP = new Particle(last_pos.x + default_lenght, y + j * (default_lenght * sqrt(3) / 2), m_p);
+                        ptr_NewP = new Particle(last_pos.x + default_lenght, y + j * (default_lenght * sqrt(3) / 2), z, m_p);
                         last_pos = ptr_NewP->pos;
                     }
                 }
@@ -111,6 +108,7 @@ public:
         int w_number_triangle=0;
         for (int i = 0; i < h-1; i++) {
             for (int j = 0; j < w-1; j++) {
+                // YYY POURQUOI FAIRE ?
                 auto a = LIST_particles[i*w + j];
                 auto d = LIST_particles[(i+1)*w + j+1];
                 Joint *AB = nullptr, *BD = nullptr, *AC = nullptr, *CD = nullptr, *AD = nullptr, *BC = nullptr;

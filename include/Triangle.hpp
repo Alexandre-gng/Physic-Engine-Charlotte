@@ -2,8 +2,8 @@
 
 using namespace std;
 
-#include "ClassJoint.hpp"
-#include "ClassParticle.hpp"
+#include "Joint.hpp"
+#include "Particle.hpp"
 
 class Triangle {
 public:

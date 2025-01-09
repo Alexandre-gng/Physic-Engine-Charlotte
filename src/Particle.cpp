@@ -1,5 +1,5 @@
-#include "../../OPENGL/include/ClassParticle.hpp"
-#include "../../OPENGL/include/ClassJoint.hpp"
+#include "../../OPENGL/include/Particle.hpp"
+#include "../../OPENGL/include/Joint.hpp"
 
 // YYY to supp tout ça ?
 

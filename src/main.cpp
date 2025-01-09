@@ -6,17 +6,34 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 /*
+ *
  * STARTING 08/11/2024
+ *
+ * TO DO:
+ *      - class Renderer
+ *      - delete Eigen everywhere (Damping_velocities(), Particle, ...?)
+ *      - changer tous les gnagnagna_list en LIST_gnagnagn
+ *      - delete_Joint() à faire in Object()
+ *      - fix bugs
+ *      - implements things
+ *      - do other things
+ *
  * ETAPES:
- *      - Mettre à jour Physic
- *      - Mettre à jour StretchingConstraint
+ *      - Mettre à jour Joint OK
+ *      - Mettre à jour Object.cpp OK
+ *      - Mettre à jour StretchingConstraint OK
+ *      - Mettre à jour Cloth OK
+ *      - Mettre à jour Wall OK
  *      - Mettre à jour Particle:
- *          -> Classe Render ?
+ *
+ *      -> Classe Render:
+ *          -
  *
 */
 
-
+// Coords for only one cube
 float vertices[] = {
+        // Face 1
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -24,6 +41,7 @@ float vertices[] = {
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
+        // Face 2 ...
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
@@ -163,7 +181,7 @@ int main() {
         ourShader.use();
 
         // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
 
         // camera/view transformation

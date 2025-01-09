@@ -1,7 +1,9 @@
 #pragma once
 
-#include "ClassParticle.hpp"
-#include "Objects/ClassObject.hpp"
+#include <utility>
+
+#include "Particle.hpp"
+#include "Objects/Object.hpp"
 
 using namespace std;
 
@@ -23,6 +25,6 @@ public:
     // Reduce the velocity to keep only the global movement
     static void damping_velocities(float k_damping, Object* ptr_O);
 
-    Physic(vector<Object*> vec, float g): objects_list(vec), gravity(g) {}
+    Physic(vector<Object*> vec, float g): objects_list(std::move(vec)), gravity(g) {}
 };
 

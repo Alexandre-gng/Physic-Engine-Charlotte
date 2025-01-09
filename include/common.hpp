@@ -22,9 +22,8 @@ const float FRICTION = 0.9;
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "OPENGL/shaderClass.hpp"
-#include "OPENGL/cameraClass.hpp"
+#include "OPENGL/Shader.hpp"
+#include "OPENGL/Camera.hpp"
 
-#include "../dependencies/Eigen/Eigen"
 
 #endif

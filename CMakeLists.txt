@@ -17,23 +17,23 @@ set(GLM_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/glm")
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/glad.c
-        include/OPENGL/shaderClass.hpp
-        include/OPENGL/cameraClass.hpp
+        include/OPENGL/Shader.hpp
+        include/OPENGL/Camera.hpp
 
-        include/Objects/ClassCloth.hpp
-        include/Objects/ClassWall.hpp
-        include/Objects/ClassObject.hpp
+        include/Objects/Cloth.hpp
+        include/Objects/Wall.hpp
+        include/Objects/Object.hpp
 
-        include/Constraints/ClassConstraint.hpp
-        include/Constraints/ClassRigidBodyColConstraint.hpp
-        include/Constraints/ClassStretchingConstraint.hpp
+        include/Constraints/Constraint.hpp
+        include/Constraints/RigidBodyColConstraint.hpp
+        include/Constraints/StretchingConstraint.hpp
 
-        include/ClassParticle.hpp
-        include/ClassPhysic.hpp
+        include/Particle.hpp
+        include/Physic.hpp
 
         include/common.hpp
-        include/ClassJoint.hpp
-        include/ClassTriangle.hpp
+        include/Joint.hpp
+        include/Triangle.hpp
         src/Cloth.cpp
         src/Joint.cpp
         src/Object.cpp
@@ -41,6 +41,7 @@ add_executable(${PROJECT_NAME}
         src/Physic.cpp
         src/RigidBodyColConstraint.cpp
         src/StretchingConstraint.cpp
+        include/OPENGL/Renderer.hpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})

@@ -1,6 +1,6 @@
-#include "../include/Constraints/ClassStretchingConstraint.hpp"
-#include "../../OPENGL/include/ClassParticle.hpp"
-#include "../include/Objects/ClassObject.hpp"
+#include "../include/Constraints/StretchingConstraint.hpp"
+#include "../../OPENGL/include/Particle.hpp"
+#include "../include/Objects/Object.hpp"
 
 
 void StretchingConstraint::apply() {
@@ -12,13 +12,13 @@ void StretchingConstraint::apply() {
             } else {
                 ptr_P2 = j->particle2;
             }
-            sf::Vector2f delta_pos = ptr_P2->pos - ptr_P1->pos;
-            float current_distance = sqrt(delta_pos.x * delta_pos.x + delta_pos.y * delta_pos.y);
+            glm::vec3 delta_pos = ptr_P2->pos - ptr_P1->pos;
+            float current_distance = sqrt(delta_pos.x * delta_pos.x + delta_pos.y * delta_pos.y + delta_pos.z * delta_pos.z);
 
-            sf::Vector2f deltaP1 = (-(ptr_P2->inverse_mass) * (current_distance - j->distance) /
+            glm::vec3 deltaP1 = (-(ptr_P2->inverse_mass) * (current_distance - j->distance) /
                                     ((ptr_P2->inverse_mass + ptr_P1->inverse_mass) * current_distance)) *
                                    delta_pos;
-            sf::Vector2f deltaP2 = ((ptr_P1->inverse_mass) * (current_distance - j->distance) /
+            glm::vec3 deltaP2 = ((ptr_P1->inverse_mass) * (current_distance - j->distance) /
                                     ((ptr_P2->inverse_mass + ptr_P1->inverse_mass) * current_distance)) *
                                    delta_pos;
 
