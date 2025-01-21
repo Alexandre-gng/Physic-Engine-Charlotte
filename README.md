@@ -11,3 +11,7 @@ Already implemented:
      - Constraints: Stretching [DONE], Rigid body collision [IN PROGRESS], bending force [IN PROGRESS]
   - Object::Wall :
      - Constraints: None 
+
+
+
+[^1]: MATTHIAS M., BRUNO H., MARCUS H., JOHN R.: Position Based Dynamics (2006)
