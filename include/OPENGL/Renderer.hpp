@@ -35,44 +35,53 @@ public:
 
         glBindVertexArray(new_VAO);
         glBindBuffer(GL_ARRAY_BUFFER, new_VBO);
+        // TAB_triangles:
+        /*
+         *     o--o--o--o
+         *     | / \/ \ |
+         *     o--o--o--o
+         *     | \ / \ / |
+         *
+         */
+        float vertices[ptr_O->TAB_triangles.size()*5*ptr_O->TAB_triangles[0].size()*3];
 
-        float vertices[sizeof(ptr_O->LIST_particles)*5];
-        // Convert Particles positions to a clean verticies list
         int index = 0;
-        for (auto vector: ptr_O->TAB_triangles) {
-            for (auto ptr_T: vector) {
-                if (ptr_T == nullptr) {
-                    continue;
+        // TO DEBUG YYY
+        for (int i = 0; i < ptr_O->TAB_triangles.size(); i++) {
+            for (int j = 0; j < ptr_O->TAB_triangles[i].size(); j++) {
+                if (ptr_O->TAB_triangles[i][j] != nullptr) {
+                    Triangle* ptr_t = ptr_O->TAB_triangles[i][j];
+                    Particle* ptr_P1 = ptr_t->list_joints[0]->particle1;
+                    Particle* ptr_P2 = ptr_t->list_joints[0]->particle2;
+                    Particle* ptr_P3 = nullptr;
+                    if (ptr_t->list_joints[1]->particle1 != ptr_P1 && ptr_t->list_joints[1]->particle1 != ptr_P2) {
+                        ptr_P3 = ptr_t->list_joints[1]->particle1;
+                    } else {
+                        ptr_P3 = ptr_t->list_joints[1]->particle2;
+                    }
+
+                    // Particle 1
+                    vertices[index] = ptr_P1->pos.x;
+                    vertices[index+1] = ptr_P1->pos.y;
+                    vertices[index+2] = ptr_P1->pos.z;
+                    vertices[index+3] = float((index%2) + 1);
+                    vertices[index+4] = float(index%2);
+                    index += 5;
+                    // Particle 2
+                    vertices[index] = ptr_P2->pos.x;
+                    vertices[index+1] = ptr_P2->pos.y;
+                    vertices[index+2] = ptr_P2->pos.z;
+                    vertices[index+3] = float((index%2) + 1);
+                    vertices[index+4] = float(index%2);
+                    index += 5;
+                    // Particle 3
+                    vertices[index] = ptr_P3->pos.x;
+                    vertices[index+1] = ptr_P3->pos.y;
+                    vertices[index+2] = ptr_P3->pos.z;
+                    vertices[index+3] = float((index%2) + 1);
+                    vertices[index+4] = float(index%2);
+                    index += 5;
                 }
-                Particle* ptr_P1 = ptr_T->list_joints[0]->particle1;
-                Particle* ptr_P2 = ptr_T->list_joints[0]->particle2;
-                Particle* ptr_P3;
-                if (ptr_T->list_joints[1]->particle1 != ptr_P1 && ptr_T->list_joints[1]->particle1 != ptr_P2) {
-                    ptr_P3 = ptr_T->list_joints[1]->particle1;
-                } else {
-                    ptr_P3 = ptr_T->list_joints[1]->particle2;
-                }
-                // Particle 1
-                vertices[index] = ptr_P1->pos.x;
-                vertices[index+1] = ptr_P1->pos.y;
-                vertices[index+2] = ptr_P1->pos.z;
-                vertices[index+3] = float((index%2) + 1);
-                vertices[index+4] = float(index%2);
-                index += 5;
-                // Particle 2
-                vertices[index] = ptr_P2->pos.x;
-                vertices[index+1] = ptr_P2->pos.y;
-                vertices[index+2] = ptr_P2->pos.z;
-                vertices[index+3] = float((index%2) + 1);
-                vertices[index+4] = float(index%2);
-                index += 5;
-                // Particle 3
-                vertices[index] = ptr_P3->pos.x;
-                vertices[index+1] = ptr_P3->pos.y;
-                vertices[index+2] = ptr_P3->pos.z;
-                vertices[index+3] = float((index%2) + 1);
-                vertices[index+4] = float(index%2);
-                index += 5;
             }
         }
         VAO_lenghts.push_back(index);
@@ -104,6 +113,7 @@ public:
         shader.use();  // Activer le shader
         int index = 0;
         for (unsigned int VAO : VAOs) {
+            cout <<" rendering" << endl;
             glBindVertexArray(VAO);
             // TROP RESTRICTIF: par exemple si c'est un cube, on Draw Arrays par 36, non par 6
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

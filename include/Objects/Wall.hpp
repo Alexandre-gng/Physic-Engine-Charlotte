@@ -11,12 +11,8 @@ class Wall : public Object {
 public:
     int                         w, h;
     float                       friction;
-    Eigen::Vector2f             normal_vector;
+    glm::vec3                   normal_vector;
 
-    void update() override {
-        cout << "updating" << endl;
-        return;
-    }
 
     Wall(int x, int y, int z, int w, int h, float d, float m_p, float frict): friction(frict), w(w), h(h), Object(WALL, 2, 2, 1, 2) {
         Particle* ptr_NewP1 = new Particle(x, y, z, m_p);
@@ -39,8 +35,9 @@ public:
         TAB_triangles[0][0] = ptr_NewT1;
         TAB_triangles[1][0] = ptr_NewT2;
 
-        // Calculate the normal vector of the wall, need to be done in 3D.
-        // See "produit vectoriel" in french
-        // normal_vector =
+
+        Particle* ptr_P1 = list_joints[0]->particle1;
+        Particle* ptr_P2 = list_joints[0]->particle2;
+
     };
 };

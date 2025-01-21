@@ -34,7 +34,7 @@ public:
 
     Object(type t, int h_P, int w_P, int h_T, int w_T) : object_type(t) {
         LIST_particles.resize(h_P * w_P);
-        TAB_triangles.resize(h_T, std::vector<Triangle*>(w_T, nullptr));
+        TAB_triangles.resize(h_T, std::vector<Triangle*>(w_T-2, nullptr));
     }
 
     virtual ~Object() = default;

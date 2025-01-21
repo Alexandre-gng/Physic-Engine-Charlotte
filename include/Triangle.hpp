@@ -7,10 +7,9 @@ using namespace std;
 
 class Triangle {
 public:
-    vector<Joint*> list_joints;
-    vector<Triangle*> list_nearest_triangles;
-    // YYY TO CHANGE TO A VECTOR IN 3D (produit vectoriel)
-    glm::vec3 normal_vector;
+    vector<Joint*>      list_joints;
+    vector<Triangle*>   list_nearest_triangles;
+    glm::vec3           normal_vector;
 
     // Triangle constructor: add the 3 joints to the list_joints and add the ptr_triangle to each Particle concerned
     Triangle(Joint* ptr_J1, Joint* ptr_J2, Joint* ptr_J3) {
@@ -31,22 +30,20 @@ public:
 
     // Update the normal_vector to the triangle
     void update_normal() {
-        Particle* ptrA = list_joints[0]->particle1;
-        Particle* ptrB = list_joints[0]->particle2;
-        if (list_joints[1]->particle1 == ptrB) {
-            if (list_joints[2]->particle1 == ptrA) {
-                normal_vector = glm::normalize(glm::cross(ptrB->pos - ptrA->pos, list_joints[1]->particle2->pos - ptrB->pos));
+        Particle* ptr_P1 = list_joints[0]->particle1;
+        Particle* ptr_P2 = list_joints[0]->particle2;
+        if (list_joints[1]->particle1 == ptr_P2) {
+            if (list_joints[2]->particle1 == ptr_P1) {
+                normal_vector = glm::normalize(glm::cross(ptr_P2->pos - ptr_P1->pos, list_joints[1]->particle2->pos - ptr_P2->pos));
             } else {
-                normal_vector = glm::normalize(glm::cross(ptrB->pos - ptrA->pos, list_joints[2]->particle1->pos - ptrB->pos));
+                normal_vector = glm::normalize(glm::cross(ptr_P2->pos - ptr_P1->pos, list_joints[2]->particle1->pos - ptr_P2->pos));
             }
         } else {
-            if (list_joints[2]->particle1 == ptrA) {
-                normal_vector = glm::normalize(glm::cross(ptrB->pos - ptrA->pos, list_joints[1]->particle1->pos - ptrB->pos));
+            if (list_joints[2]->particle1 == ptr_P1) {
+                normal_vector = glm::normalize(glm::cross(ptr_P2->pos - ptr_P1->pos, list_joints[1]->particle1->pos - ptr_P2->pos));
             } else {
-                normal_vector = glm::normalize(glm::cross(ptrB->pos - ptrA->pos, list_joints[2]->particle2->pos - ptrB->pos));
+                normal_vector = glm::normalize(glm::cross(ptr_P2->pos - ptr_P1->pos, list_joints[2]->particle2->pos - ptr_P2->pos));
             }
         }
     }
-
-    // Update the normal_vector to the triangle, a scalar in 2D and vector in 3D
 };

@@ -1,4 +1,8 @@
 #include "../include/common.hpp"
+#include "../include/OPENGL/Renderer.hpp"
+#include "../include/Objects/Cloth.hpp"
+#include "../include/Physic.hpp"
+
 
 using namespace std;
 
@@ -26,8 +30,12 @@ const unsigned int SCR_HEIGHT = 600;
  *      - Mettre à jour Wall OK
  *      - Mettre à jour Particle:
  *
- *      -> Classe Render:
- *          -
+ * BUG:
+ *     -> Créer le wall avec normal_vector pour comprendre s'il l'affiche ou pas
+ *     -> 
+ *
+ * PROBLEMES FUTURS:
+ *     - Le Cloth est initialisé à l'envers, le repère n'étant pas le même entre SFML et OPENGL
  *
  * AMELIORATIONS:
  *     - Passer pas glDrawElements() dans render, et utiliser des EBO
@@ -36,66 +44,6 @@ const unsigned int SCR_HEIGHT = 600;
  *          => est ce mieux?
  *
 */
-
-// Coords for only one cube
-float vertices[] = {
-        // Face 1
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        // Face 2 ...
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
-
-glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f, 0.0f, 0.0f),
-        glm::vec3( 2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f, 2.0f, -2.5f),
-        glm::vec3( 1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f)
-};
 
 
 // camera things
@@ -138,38 +86,19 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     // ============================ SHADER THING ================================
     // Creation et initialisation du vs et fs (gestion des positions/ verticies)
-    Shader ourShader("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
+    //Shader ourShader("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
 
     // ========================= INITIALISATION VBO-VAO-EBO ===========================
-    // Vertex Buffer Object: Data sent by batch to the GPU
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    //unsigned int EBO;
-    //glGenBuffers(1, &EBO);
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
+    Renderer renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
+    cout << "Renderer created" << endl;
+    // Originally it was (20, 20)
+    Cloth* ptr_Cloth = new Cloth(200, 200, 0, 10, 16, 15.f , 1.f, 0.01f);
+    cout << "Cloth created" << endl;
 
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // Copie les données de Vertices vers VBO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // Copie les données de indices vers EBO
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // ============================= VAO THINGS ===========================
-    // Vertex array object (VAO): Tells the GPU how to deal with the VBO
-    // VAO configuration, recupére les pointeurs vers EBO et VBO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    // Layout of the VAO (position)
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
-    // Layout of the VAO #2 (color)
-    glEnableVertexAttribArray(1);
-
+    renderer.add_moving_Object(ptr_Cloth);
+    cout << "Cloth added to renderer" << endl;
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    ourShader.setMat4("projection", projection);
+    renderer.shader.setMat4("projection", projection);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -184,48 +113,21 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-        ourShader.use();
+        renderer.shader.use();
 
         // pass projection matrix to shader (note that in this case it could change every frame)
         projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
+        renderer.shader.setMat4("projection", projection);
 
         // camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
+        renderer.shader.setMat4("view", view);
 
-        // Les deux premières lignes équivalent la troisième
-        /*
-        unsigned int projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        ourShader.setMat4("projection", projection);
-        */
-
-        // Drawing stuffs
-        glBindVertexArray(VAO);
-        for(unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            if (i == 0) {
-                model = glm::translate(model, cubePositions[i]);
-                model = glm::rotate(model, (float)glfwGetTime(),
-                                    glm::vec3(1.0f, 0.3f, 0.5f));
-            } else {
-                model = glm::translate(model, cubePositions[i]);
-                float angle = 20.0f * i;
-                model = glm::rotate(model, glm::radians(angle),
-                                    glm::vec3(1.0f, 0.3f, 0.5f));
-            }
-            ourShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        renderer.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
     glfwTerminate();
     return 0;
 }

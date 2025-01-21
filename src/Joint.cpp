@@ -6,5 +6,5 @@ Joint::Joint(Particle* ptr_P1, Particle* ptr_P2): particle1(ptr_P1), particle2(p
     glm::vec3 delta_pos = ptr_P2->pos - ptr_P1->pos;
     ptr_P1->list_joints.push_back(this);
     ptr_P2->list_joints.push_back(this);
-    distance = sqrt((delta_pos.x)*(delta_pos.x) + (delta_pos.y*delta_pos.y) + (delta_pos.z*delta_pos.z));
+    distance = sqrt((delta_pos.x)*(delta_pos.x) + (delta_pos.y*delta_pos.y));
 };
