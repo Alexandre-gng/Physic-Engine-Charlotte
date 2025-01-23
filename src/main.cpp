@@ -1,6 +1,7 @@
 #include "../include/common.hpp"
 #include "../include/OPENGL/Renderer.hpp"
 #include "../include/Objects/Cloth.hpp"
+#include "../include/Objects/Wall.hpp"
 #include "../include/Physic.hpp"
 
 
@@ -16,19 +17,9 @@ const unsigned int SCR_HEIGHT = 600;
  * TO DO:
  *      - class Renderer
  *      - delete Eigen everywhere (Damping_velocities(), Particle, ...?)
+ *          -> A tester: supprimer le fichier Eigen
  *      - changer tous les gnagnagna_list en LIST_gnagnagn
  *      - delete_Joint() à faire in Object()
- *      - fix bugs
- *      - implements things
- *      - do other things
- *
- * ETAPES:
- *      - Mettre à jour Joint OK
- *      - Mettre à jour Object.cpp OK
- *      - Mettre à jour StretchingConstraint OK
- *      - Mettre à jour Cloth OK
- *      - Mettre à jour Wall OK
- *      - Mettre à jour Particle:
  *
  * BUG:
  *     -> Créer le wall avec normal_vector pour comprendre s'il l'affiche ou pas
@@ -42,6 +33,7 @@ const unsigned int SCR_HEIGHT = 600;
  *     - Se questionner sur l'utilité de la classe Joint
  *     - Utiliser une hashmap pour la détection des triangles voisins
  *          => est ce mieux?
+ *     - glEnable(GL_CULL_FACE)) pour ne pas afficher les triangles qui ne sont pas vus ?
  *
 */
 
@@ -88,15 +80,29 @@ int main() {
     // Creation et initialisation du vs et fs (gestion des positions/ verticies)
     //Shader ourShader("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
 
-    // ========================= INITIALISATION VBO-VAO-EBO ===========================
+    // ========================= RENDERING THINGS ===========================
     Renderer renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
     cout << "Renderer created" << endl;
-    // Originally it was (20, 20)
+
+    // ========================= IMMUABLE OBJECTS ===========================
+    // Cloth creation
     Cloth* ptr_Cloth = new Cloth(200, 200, 0, 10, 16, 15.f , 1.f, 0.01f);
     cout << "Cloth created" << endl;
 
     renderer.add_moving_Object(ptr_Cloth);
     cout << "Cloth added to renderer" << endl;
+
+    // ========================= IMMUABLE OBJECTS ===========================
+    vector<Object*> LIST_immuable_object;
+    // Wall creation
+    Wall* ptr_Wall = new Wall(0, 0, 0, 100, 100, 15.f, 1.f);
+    cout << "Wall created" << endl;
+
+    LIST_immuable_object.push_back(ptr_Wall);
+    renderer.add_immuable_Objects(LIST_immuable_object);
+    cout << "Cloth added to renderer" << endl;
+
+    // ========================= CAMERA THINGS ===========================
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     renderer.shader.setMat4("projection", projection);
 

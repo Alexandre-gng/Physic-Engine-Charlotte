@@ -10,8 +10,6 @@ class Joint;
 
 using namespace std;
 
-// YYY CHANGE sf::vector2f to Eigen::Vector2f
-
 
 class Particle {
 public:

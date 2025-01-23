@@ -10,11 +10,15 @@
 class Wall : public Object {
 public:
     int                         w, h;
-    float                       friction;
+    // YYY Maybe ?
+    // float                       dampingFactor;
     glm::vec3                   normal_vector;
 
+    void supp_Particle(Particle* ptr_P) {
+        return;
+    }
 
-    Wall(int x, int y, int z, int w, int h, float d, float m_p, float frict): friction(frict), w(w), h(h), Object(WALL, 2, 2, 1, 2) {
+    Wall(int x, int y, int z, int w, int h, float d, float m_p): w(w), h(h), Object(WALL, 2, 2, 1, 2) {
         Particle* ptr_NewP1 = new Particle(x, y, z, m_p);
         Particle* ptr_NewP2 = new Particle(x+w, y, z, m_p);
         Particle* ptr_NewP3 = new Particle(x, y+h, z, m_p);
@@ -32,12 +36,10 @@ public:
 
         Triangle* ptr_NewT1 = new Triangle(ptr_J1, ptr_J2, ptr_J3);
         Triangle* ptr_NewT2 = new Triangle(ptr_J3, ptr_J4, ptr_J5);
-        TAB_triangles[0][0] = ptr_NewT1;
-        TAB_triangles[1][0] = ptr_NewT2;
-
-
-        Particle* ptr_P1 = list_joints[0]->particle1;
-        Particle* ptr_P2 = list_joints[0]->particle2;
-
+        LIST_triangles[0] = ptr_NewT1;
+        LIST_triangles[1] = ptr_NewT2;
+        // YYY
+        // TAB_triangles[0][0] = ptr_NewT1;
+        // TAB_triangles[1][0] = ptr_NewT2;
     };
 };

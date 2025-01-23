@@ -26,7 +26,8 @@ public:
 
     vector<Particle*>                   LIST_particles;
     // YYY Changer en LIST ?
-    vector<vector<Triangle*>>           TAB_triangles;
+    vector<Triangle*>                   LIST_triangles;
+    // vector<vector<Triangle*>>           TAB_triangles;
     /* TAB_triangles :
      *     o--o--o--o
      *     | \| \| \| \
@@ -44,13 +45,20 @@ public:
     void delete_Joint(Joint* ptr_J);
 
     Object(type t, int h_P, int w_P, int h_T, int w_T) : object_type(t) {
-        LIST_particles.resize(h_P * w_P);
-        TAB_triangles.resize(h_T, std::vector<Triangle*>(w_T-2, nullptr));
+        if (t == CLOTH) {
+            LIST_particles.resize(h_P * w_P);
+            LIST_triangles.resize(h_T * (w_T - 2));
+        }
+        if (t == WALL) {
+            LIST_particles.resize(4);
+            LIST_triangles.resize(2);
+        }
     }
 
     virtual ~Object() = default;
 
     // YYY RIEN A FAIRE LA, DEVRAIT ALLER DANS UNE CLASSE "ENGINE" ?
     void detect_Particle(glm::vec3 mouse_pos);
+    // YYY pas virtual
     virtual void supp_Particle(Particle* ptr_P) = 0;
 };
