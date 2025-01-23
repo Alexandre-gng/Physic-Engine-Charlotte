@@ -28,7 +28,6 @@ public:
     int          mass_particles;
     int          height;
     int          width;
-    unsigned int number_p;
 
 
     // REFAIRE AVEC L'ALGO YYY
@@ -36,7 +35,7 @@ public:
 
 
     Cloth(int x, int y, int z, int w, int h, float d,int m_p, float frict)
-            : default_lenght(d), mass_particles(m_p), width(w), height(h), number_p(w*h), Object(CLOTH, h, w, h, w*2) {
+            : default_lenght(d), mass_particles(m_p), width(w), height(h), Object(CLOTH, h, w, h, w*2) {
 
         // Adding the Stretching constraint
         LIST_constraints.push_back(std::make_shared<StretchingConstraint>(default_lenght, this));

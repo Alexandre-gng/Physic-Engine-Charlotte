@@ -35,14 +35,7 @@ public:
 
         glBindVertexArray(new_VAO);
         glBindBuffer(GL_ARRAY_BUFFER, new_VBO);
-        // TAB_triangles:
-        /*
-         *     o--o--o--o
-         *     | / \/ \ |
-         *     o--o--o--o
-         *     | \ / \ / |
-         *
-         */
+
         float vertices[ptr_O->TAB_triangles.size()*5*ptr_O->TAB_triangles[0].size()*3];
 
         int index = 0;
@@ -98,8 +91,13 @@ public:
         VAOs.push_back(new_VAO);
     };
 
-    // Adds an immuable Object to the engine (Reusing the same VBO for these)
-    void add_immuable_Object(vector<Object*> LIST_objects) {
+    // Adds a list of immuable Object to the engine (Reusing the same VBO for these)
+    void add_immuable_Objects(vector<Object*> LIST_objects) {
+        float vertices[];
+
+        for (auto ptr_O: LIST_objects) {
+
+        }
     };
 
 

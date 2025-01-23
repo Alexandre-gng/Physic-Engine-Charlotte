@@ -25,8 +25,19 @@ public:
     bool                                moving;
 
     vector<Particle*>                   LIST_particles;
-
+    // YYY Changer en LIST ?
     vector<vector<Triangle*>>           TAB_triangles;
+    /* TAB_triangles :
+     *     o--o--o--o
+     *     | \| \| \| \
+     *     o--o--o--o--o
+     *     | /| /| /| /
+     *     o--o--o--o
+     *     | \| \| \| \
+     *     o--o--o--o--o
+     *     ...
+     */
+
     vector<shared_ptr<Constraint>>      LIST_constraints;
 
     // Delete a Joint between two Particles
