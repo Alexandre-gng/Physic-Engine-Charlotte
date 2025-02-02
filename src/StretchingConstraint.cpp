@@ -5,7 +5,7 @@
 
 void StretchingConstraint::apply() {
     for (const auto& ptr_P1: ptr_object->LIST_particles) {
-        for (auto j: ptr_P1->list_joints) {
+        for (auto j: ptr_P1->LIST_joints) {
             Particle *ptr_P2;
             if (j->particle2 == ptr_P1) {
                 ptr_P2 = j->particle1;

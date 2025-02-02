@@ -29,7 +29,7 @@ public:
 
     Cloth(int x, int y, int z, int w, int h, float d,int m_p, float frict);
 
-    // REFAIRE AVEC L'ALGO YYY
+    // REFAIRE AVEC L'ALGO YYY ?
     void supp_Particle(Particle* ptr_P) override;
 
 };

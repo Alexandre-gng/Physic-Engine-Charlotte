@@ -1,8 +1,9 @@
 #include "../../OPENGL/include/Particle.hpp"
 #include "../../OPENGL/include/Joint.hpp"
 
-// YYY to supp tout ça ?
 
+
+// YYY to supp tout ça ?
 void Particle::applyFriction() {
     forces -= velocity * friction;
 }
@@ -18,7 +19,7 @@ void Particle::updateVelocity(float dt) {
 
 // YYY TO DO
 void Particle::cutTwoParticles(Particle* Pa) {
-    for (const auto j: this->list_joints) {
+    for (const auto j: this->LIST_joints) {
         if ((j->particle2 == Pa || j->particle1 == Pa) && (j->particle2 == this || j->particle1 == this)) {
             //j->deleteJoint();
         }

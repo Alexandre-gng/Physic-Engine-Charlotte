@@ -17,8 +17,8 @@ class Object {
 public:
     enum type {
         CLOTH,
-        ROPE,
         WALL,
+        CUBE,
     };
     type                                object_type;
     // YYY
@@ -52,6 +52,10 @@ public:
         if (t == WALL) {
             LIST_particles.resize(4);
             LIST_triangles.resize(2);
+        }
+        if (t == CUBE) {
+            LIST_particles.resize(36);
+            LIST_triangles.resize(12);
         }
     }
 

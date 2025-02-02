@@ -22,8 +22,8 @@ public:
     glm::vec3         prev_pos;
     glm::vec3         forces;
     glm::vec3         velocity;
-    vector<Joint*>    list_joints;
-    vector<Triangle*> list_triangles_friends;
+    vector<Joint*>    LIST_joints;
+    vector<Triangle*> LIST_triangles_friends;
 
     Object* ptr_Object;
 
@@ -36,6 +36,9 @@ public:
     void updateVelocity(float dt);
 
     void cutTwoParticles(Particle* Pa);
+
+    // Constructor dedicated for a static object - mass = 0kg;
+    Particle(float x, float y, float z) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {x,y,z}), mass(0), inverse_mass(0) {}
 
     Particle(float x, float y, float z, float m) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {x,y,z}), mass(m), inverse_mass(1/m) {
         // SFML Shape creation

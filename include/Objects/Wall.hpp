@@ -10,36 +10,45 @@
 class Wall : public Object {
 public:
     int                         w, h;
+    // YYY NECESSARY ?
+    glm::vec3                   pos;
+    glm::vec3                   normal_vector;
+
     // YYY Maybe ?
     // float                       dampingFactor;
-    glm::vec3                   normal_vector;
+
 
     void supp_Particle(Particle* ptr_P) {
         return;
     }
 
-    Wall(int x, int y, int z, int w, int h, float d, float m_p): w(w), h(h), Object(WALL, 2, 2, 1, 2) {
-        Particle* ptr_NewP1 = new Particle(x, y, z, m_p);
-        Particle* ptr_NewP2 = new Particle(x+w, y, z, m_p);
-        Particle* ptr_NewP3 = new Particle(x, y+h, z, m_p);
-        Particle* ptr_NewP4 = new Particle(x+w, y+h, z, m_p);
-        LIST_particles[0] = ptr_NewP1;
-        LIST_particles[1] = ptr_NewP2;
-        LIST_particles[2] = ptr_NewP3;
-        LIST_particles[3] = ptr_NewP4;
+    /*        J1
+    *      A ---- B
+    *  J3  |  J2/ |  J4
+    *      |  /   |
+    *      C ---- D
+    *         J5
+    *
+    */
+    Wall(int x, int y, int z, int w, int h): w(w), h(h), Object(WALL, 2, 2, 1, 2) {
+        Particle* ptr_NewP_A = new Particle(x, y, z);
+        Particle* ptr_NewP_B = new Particle(x+w, y, z);
+        Particle* ptr_NewP_C = new Particle(x, y+h, z);
+        Particle* ptr_NewP_D = new Particle(x+w, y+h, z);
+        LIST_particles[0] = ptr_NewP_A;
+        LIST_particles[1] = ptr_NewP_B;
+        LIST_particles[2] = ptr_NewP_C;
+        LIST_particles[3] = ptr_NewP_D;
 
-        Joint* ptr_J1 = new Joint(ptr_NewP1, ptr_NewP2);
-        Joint* ptr_J2 = new Joint(ptr_NewP2, ptr_NewP3);
-        Joint* ptr_J3 = new Joint(ptr_NewP1, ptr_NewP3);
-        Joint* ptr_J4 = new Joint(ptr_NewP1, ptr_NewP4);
-        Joint* ptr_J5 = new Joint(ptr_NewP3, ptr_NewP4);
+        Joint* ptr_J1 = new Joint(ptr_NewP_A, ptr_NewP_B);
+        Joint* ptr_J2 = new Joint(ptr_NewP_B, ptr_NewP_C);
+        Joint* ptr_J3 = new Joint(ptr_NewP_A, ptr_NewP_C);
+        Joint* ptr_J4 = new Joint(ptr_NewP_B, ptr_NewP_D);
+        Joint* ptr_J5 = new Joint(ptr_NewP_C, ptr_NewP_D);
 
         Triangle* ptr_NewT1 = new Triangle(ptr_J1, ptr_J2, ptr_J3);
-        Triangle* ptr_NewT2 = new Triangle(ptr_J3, ptr_J4, ptr_J5);
+        Triangle* ptr_NewT2 = new Triangle(ptr_J2, ptr_J4, ptr_J5);
         LIST_triangles[0] = ptr_NewT1;
         LIST_triangles[1] = ptr_NewT2;
-        // YYY
-        // TAB_triangles[0][0] = ptr_NewT1;
-        // TAB_triangles[1][0] = ptr_NewT2;
     };
 };

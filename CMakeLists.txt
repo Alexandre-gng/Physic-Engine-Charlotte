@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
         src/RigidBodyColConstraint.cpp
         src/StretchingConstraint.cpp
         include/OPENGL/Renderer.hpp
+        include/Objects/Cube.hpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})
