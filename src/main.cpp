@@ -2,6 +2,7 @@
 #include "../include/OPENGL/Renderer.hpp"
 #include "../include/Objects/Cloth.hpp"
 #include "../include/Objects/Wall.hpp"
+#include "../include/Objects/Cube.hpp"
 #include "../include/Physic.hpp"
 
 
@@ -11,25 +12,15 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 /*
- * pour débuguer je dois:
- *      - afficher un carré tout le temps pour être sûr que l'affichage fonctionne
- *      - Ensuite véirifer si le wall est afffiché aussi
- *          => Si non, corriger
- *          => Si oui, comprendre
- *
- *  1) Créer un carré
- */
-/*
- *
  * STARTING 08/11/2024
  *
  * TO DO:
- *      - Taille du Wall
+ *      - Revoir complément le système de classe, les sous classes de Object ont un ptr vers un Object ???
+ *      - règler le soucis de resize de la fenêtre /!\
  *      - class Renderer
  *      - class Object::Cube
  *      - delete Eigen everywhere (Damping_velocities(), Particle, ...?) OK
  *          -> A tester: supprimer le fichier Eigen
- *      - changer tous les gnagnagna_list en LIST_gnagnagn
  *      - delete_Joint() à faire in Object()
  *
  * PROBLEMES FUTURS:
@@ -42,6 +33,7 @@ const unsigned int SCR_HEIGHT = 600;
  *          => est ce mieux?
  *     - glEnable(GL_CULL_FACE)) pour ne pas afficher les triangles qui ne sont pas vus ?
  *
+ *     - Si ajout de fragment shader => Utiliser UBO pour les matrices de transformation
 */
 
 
@@ -61,49 +53,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-float cube_vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
 
 int main() {
     cout << "STARTING PROGRAM" << endl;
@@ -132,240 +82,64 @@ int main() {
     cout << "Renderer created" << endl;
 
     // ========================= OBJECTS INITS ===========================
-    vector<Object*> LIST_immuable_object;
-    vector<Object*> LIST_moving_object;
+    vector<Object*> LIST_static_objects;
+    vector<Object*> LIST_dynamic_objects;
 
     // Wall creation
     // ------------
     Wall* ptr_Wall = new Wall(0, 0, -7, 1, 1);
     cout << "Wall created" << endl;
+    LIST_static_objects.push_back(ptr_Wall);
 
-    // LIST_immuable_object.push_back(ptr_Wall);
-    // renderer.create_VAO(LIST_immuable_object, LIST_moving_object);
-    // cout << "Cloth added to renderer" << endl;
+    // Cube creation
+    // ------------
+    Cube* ptr_Cube = new Cube(0, 0, 0, 1, 1);
+    cout << "Cube created" << endl;
+    LIST_dynamic_objects.push_back(ptr_Cube);
+
 
     // ========================= CAMERA THINGS ===========================
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     renderer.shader.setMat4("projection", projection);
 
-    // ========================= TEMPORARY SETUP VERTICES ==========================
-    /*
-     * ======= renderer::VAO_creation() =======
-     * 1. Transformer les coordonées des Objects en vertices (pos3, col2)
-     * 2. Créer un VBO dynamique
-     * 3. Créer un VBO statique
-     * 4. Créer un VAO
-     * 5. Paramétrer le VAO
-     * ==============================
-     *
-     *
-     * ======= Object::update_objects() =======
-     * 1. Use PBD to update the objects
-     * =============================
-     *
-     *
-     * ======= renderer::update_VBO() =======
-     * 1. Transformer les coordonées des Objects en vertices (pos3, col2)
-     * 2. Mise à jour partielle (uniquement objects dynamiques) => glBufferSubData()
-     * ============================
-     *
-     *
-     * ======= renderer::render() =======
-     * 1. Utiliser le shader
-     * 2. projection matrix
-     * 3. projection as uniform in Shader class
-     * 4. view with GetViewMatrix with Camera class
-     * 5. view as uniform in Shader class
-     * 6. Bind le VAO
-     * 7. model matrix as diagonal matrix
-     * 8. model matrix is translate
-     * 9. model but with hard constraints (rotation..)
-     * 10. model as uniform in Shader class
-     * 11. Bind le VBO Static
-     * 12. DrawArrays VBO Static
-     * 13. Bind le VBO Dynamic
-     * 14. DrawArrays VBO Dynamic
-     * =======================
-     *
-     * => Mettre le cube en static
-     * => Mettre le wall en dynamic
-     */
 
-    // ===== static (Cube) =====
-    // Things Cube (static)
-    int size_cube_vertices = 0;
-    for (auto i: cube_vertices) {
-        size_cube_vertices++;
-    }
-    float static_Vertices[size_cube_vertices];
-    for (int i = 0; i < size_cube_vertices; i++) {
-        static_Vertices[i] = cube_vertices[i];
-    }
-    // Number of vertices
-    unsigned int static_vertices_lenght = 36;
+    // ========================= RENDERING THINGS ==========================
+    Renderer* ptr_renderer = new Renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
+    ptr_renderer->init_dynamic_VAO(LIST_dynamic_objects);
+    ptr_renderer->init_static_VAO(LIST_static_objects);
 
 
-    // ===== dynamic (Wall) =====
-    // Things Wall (dynamic)
-    int size_wall_vertices = 0;
-    for (auto i: ptr_Wall->LIST_triangles) {
-        size_wall_vertices+= 3;
-    }
-    float dynamic_Vertices[size_wall_vertices*5];
-    int index = 0;
-    for (auto ptr_T: ptr_Wall->LIST_triangles) {
-        Particle* ptr_P1 = ptr_T->LIST_joints[0]->particle1;
-        Particle* ptr_P2 = ptr_T->LIST_joints[0]->particle2;
-        Particle* ptr_P3 = nullptr;
-        if (ptr_T->LIST_joints[1]->particle1 != ptr_P1 && ptr_T->LIST_joints[1]->particle1 != ptr_P2) {
-            ptr_P3 = ptr_T->LIST_joints[1]->particle1;
-        } else {
-            ptr_P3 = ptr_T->LIST_joints[1]->particle2;
-        }
-        // Particle 1
-        dynamic_Vertices[index] = ptr_P1->pos.x;
-        dynamic_Vertices[index+1] = ptr_P1->pos.y;
-        dynamic_Vertices[index+2] = ptr_P1->pos.z;
-        dynamic_Vertices[index+3] = float((index + 1)%2);
-        dynamic_Vertices[index+4] = float(index%2);
-        index += 5;
-        // Particle 2
-        dynamic_Vertices[index] = ptr_P2->pos.x;
-        dynamic_Vertices[index+1] = ptr_P2->pos.y;
-        dynamic_Vertices[index+2] = ptr_P2->pos.z;
-        dynamic_Vertices[index+3] = float((index + 1)%2);
-        dynamic_Vertices[index+4] = float(index%2);
-        index += 5;
-        // Particle 3
-        dynamic_Vertices[index] = ptr_P3->pos.x;
-        dynamic_Vertices[index+1] = ptr_P3->pos.y;
-        dynamic_Vertices[index+2] = ptr_P3->pos.z;
-        dynamic_Vertices[index+3] = float((index + 1)%2);
-        dynamic_Vertices[index+4] = float(index%2);
-        index += 5;
-    }
-    unsigned int dynamic_vertices_lenght = size_wall_vertices;
-
-
-    unsigned int VAO, VBO_static, VBO_dynamic;
-    glGenBuffers(1, &VBO_static);
-    glGenBuffers(1, &VBO_dynamic);
-    glGenVertexArrays(1, &VAO);
-
-    glBindVertexArray(VAO);
-
-    // ==== Static VBO ====
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_static);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
-    // VAO static configuration
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
-
-    // ==== Dynamic VBO ====
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_dynamic);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(dynamic_Vertices), dynamic_Vertices, GL_DYNAMIC_DRAW);
-    // VAO dynamic configuration
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
-
-    // ========================== CUBE ==========================
-    /*
-    unsigned int VBO_cube, VAO_cube;
-    glGenVertexArrays(1, &VAO_cube);
-    glGenBuffers(1, &VBO_cube);
-
-    glBindVertexArray(VAO_cube);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_cube);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    */
-    // ========================== WALL ==========================
-    /*
-    unsigned int VBO_wall, VAO_wall;
-    glGenVertexArrays(1, &VAO_wall);
-    glGenBuffers(1, &VBO_wall);
-
-    glBindVertexArray(VAO_wall);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_wall);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    */
-
-    renderer.shader.use();
     while (!glfwWindowShouldClose(window))
     {
-        // per-frame time logic
-        // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // input
-        // -----
         processInput(window);
 
-        // render things
-        // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // activate shader
-        renderer.shader.use();
+        ptr_renderer->shader.use();
 
         // pass projection matrix to shader
         projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        renderer.shader.setMat4("projection", projection);
+        ptr_renderer->shader.setMat4("projection", projection);
 
         // camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
-        renderer.shader.setMat4("view", view);
+        ptr_renderer->shader.setMat4("view", view);
 
-
-        // Rendu du cube
-        glBindVertexArray(VAO);
+        // prepare object transformation
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         float angle = 0.f;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        renderer.shader.setMat4("model", model);
+        ptr_renderer->shader.setMat4("model", model);
 
-        // Dessiner les objets statiques
-        glBindBuffer(GL_ARRAY_BUFFER, VBO_static);
-        glDrawArrays(GL_TRIANGLES, 0, static_vertices_lenght);
+        ptr_renderer->render();
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO_dynamic);
-        glDrawArrays(GL_TRIANGLES, 0, dynamic_vertices_lenght);
-
-        // Rendu du mur
-        /*
-        glBindVertexArray(VAO_wall);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));  // Position différente
-        renderer.shader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 6);  // Supposons que le mur a 6 sommets
-        */
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

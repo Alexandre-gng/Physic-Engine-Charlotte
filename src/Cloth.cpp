@@ -199,9 +199,11 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,int m_p, float friction)
     // Assign each Triangle its neighbours
     for (int j = 0; j < (w-1)*2-1; j++) {
         for (int i = 0; i < h-1; i++) {
+            // YYY
             // Triangle *ptr_T = TAB_triangles[i][j];
             Triangle *ptr_T = LIST_triangles[i*w + j];
             if (j != 0) {
+                // YYY
                 // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i][j-1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[i*w + j-1]);
             } if (j != w*2-1) {

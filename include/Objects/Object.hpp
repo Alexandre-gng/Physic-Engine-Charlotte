@@ -64,5 +64,5 @@ public:
     // YYY RIEN A FAIRE LA, DEVRAIT ALLER DANS UNE CLASSE "ENGINE" ?
     void detect_Particle(glm::vec3 mouse_pos);
     // YYY pas virtual
-    virtual void supp_Particle(Particle* ptr_P) = 0;
+    void supp_Particle(Particle* ptr_P);
 };
