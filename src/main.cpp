@@ -1,9 +1,13 @@
 #include "../include/common.hpp"
-#include "../include/OPENGL/Renderer.hpp"
+#include "../include/Engine/Renderer.hpp"
+#include "../include/Engine/Camera.hpp"
+
 #include "../include/Objects/Cloth.hpp"
 #include "../include/Objects/Wall.hpp"
 #include "../include/Objects/Cube.hpp"
-#include "../include/Physic.hpp"
+
+#include "../include/Engine/Physic.hpp"
+
 
 
 using namespace std;
@@ -17,14 +21,12 @@ const unsigned int SCR_HEIGHT = 600;
  * TO DO:
  *      - Revoir complément le système de classe, les sous classes de Object ont un ptr vers un Object ???
  *      - règler le soucis de resize de la fenêtre /!\
- *      - class Renderer
- *      - class Object::Cube
  *      - delete Eigen everywhere (Damping_velocities(), Particle, ...?) OK
  *          -> A tester: supprimer le fichier Eigen
  *      - delete_Joint() à faire in Object()
  *
  * PROBLEMES FUTURS:
- *     - Le Cloth est initialisé à l'envers, le repère n'étant pas le même entre SFML et OPENGL
+ *     - Le Cloth est initialisé à l'envers, le repère n'étant pas le même entre SFML et Engine
  *
  * AMELIORATIONS:
  *     - Passer pas glDrawElements() dans render, et utiliser des EBO
@@ -87,9 +89,6 @@ int main() {
 
     // Wall creation
     // ------------
-    Wall* ptr_Wall = new Wall(0, 0, -7, 1, 1);
-    cout << "Wall created" << endl;
-    LIST_static_objects.push_back(ptr_Wall);
 
     // Cube creation
     // ------------
@@ -97,6 +96,10 @@ int main() {
     cout << "Cube created" << endl;
     LIST_dynamic_objects.push_back(ptr_Cube);
 
+    // Cloth creation
+    // ------------
+    Cloth* ptr_Cloth = new Cloth(0, -5, 0, 3, 3, 1, 1, 0.01);
+    LIST_dynamic_objects.push_back(ptr_Cloth);
 
     // ========================= CAMERA THINGS ===========================
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);

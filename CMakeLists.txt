@@ -17,8 +17,8 @@ set(GLM_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/glm")
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/glad.c
-        include/OPENGL/Shader.hpp
-        include/OPENGL/Camera.hpp
+        include/Engine/Shader.hpp
+        include/Engine/Camera.hpp
 
         include/Objects/Cloth.hpp
         include/Objects/Wall.hpp
@@ -29,7 +29,7 @@ add_executable(${PROJECT_NAME}
         include/Constraints/StretchingConstraint.hpp
 
         include/Particle.hpp
-        include/Physic.hpp
+        include/Engine/Physic.hpp
 
         include/common.hpp
         include/Joint.hpp
@@ -41,7 +41,7 @@ add_executable(${PROJECT_NAME}
         src/Physic.cpp
         src/RigidBodyColConstraint.cpp
         src/StretchingConstraint.cpp
-        include/OPENGL/Renderer.hpp
+        include/Engine/Renderer.hpp
         include/Objects/Cube.hpp
         src/Cube.cpp
         src/Renderer.cpp

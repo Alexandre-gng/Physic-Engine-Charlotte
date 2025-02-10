@@ -2,7 +2,7 @@
 #include "../../OPENGL/include/Particle.hpp"
 
 
-Cloth::Cloth(int x, int y, int z, int w, int h, float d,int m_p, float friction)
+Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float friction)
         : default_lenght(d), mass_particles(m_p), width(w), height(h), Object(CLOTH, h, w, h, w*2) {
 
     // Adding the Stretching constraint
@@ -23,18 +23,18 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,int m_p, float friction)
             }
             if (j%2 == 0) {
                 if (i == h-1) {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, y + j * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 } else {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght, y + j * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    ptr_NewP = new Particle(last_pos.x + default_lenght, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 }
             } else {
                 if (i == 1) {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, y + j * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 } else {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght, y + j * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    ptr_NewP = new Particle(last_pos.x + default_lenght, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 }
             }
@@ -138,13 +138,13 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,int m_p, float friction)
                 w_number_triangle += 2;
                 h_number_triangle ++;
             }
-                /*        AB
-                *      A ---- B
-                *  AC  |  BC/ |  BD
-                *      |  /   |
-                *      C ---- D
-                *         CD
-                */
+            /*        AB
+            *      A ---- B
+            *  AC  |  BC/ |  BD
+            *      |  /   |
+            *      C ---- D
+            *         CD
+            */
             else {
                 for (auto joint: LIST_particles[(i+1)*w + j]->LIST_joints) {
                     if ((joint->particle1 == LIST_particles[(i+1)*w + j] || joint->particle2 == LIST_particles[(i+1)*w + j])

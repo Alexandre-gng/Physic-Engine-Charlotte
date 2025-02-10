@@ -1,4 +1,4 @@
-#include "../include/OPENGL/Renderer.hpp"
+#include "../include/Engine/Renderer.hpp"
 
 // YYY Commentaires à reprendre
 
@@ -92,9 +92,9 @@ void Renderer::init_dynamic_VAO(const vector<Object*>& LIST_dynamic_objects) {
     for (auto ptr_o: LIST_dynamic_objects) {
         int last_index = index;
         for (auto ptr_T: ptr_o->LIST_triangles) {
-            Particle* ptr_P1 = ptr_T->LIST_joints[0]->particle1;
-            Particle* ptr_P2 = ptr_T->LIST_joints[0]->particle2;
-            Particle* ptr_P3 = nullptr;
+            Particle *ptr_P1 = ptr_T->LIST_joints[0]->particle1;
+            Particle *ptr_P2 = ptr_T->LIST_joints[0]->particle2;
+            Particle *ptr_P3 = nullptr;
             if (ptr_T->LIST_joints[1]->particle1 != ptr_P1 && ptr_T->LIST_joints[1]->particle1 != ptr_P2) {
                 ptr_P3 = ptr_T->LIST_joints[1]->particle1;
             } else {
@@ -102,24 +102,24 @@ void Renderer::init_dynamic_VAO(const vector<Object*>& LIST_dynamic_objects) {
             }
             // Particle 1
             dynamic_vertices[index] = ptr_P1->pos.x;
-            dynamic_vertices[index+1] = ptr_P1->pos.y;
-            dynamic_vertices[index+2] = ptr_P1->pos.z;
-            dynamic_vertices[index+3] = float((index + 1)%2);
-            dynamic_vertices[index+4] = float(index%2);
+            dynamic_vertices[index + 1] = ptr_P1->pos.y;
+            dynamic_vertices[index + 2] = ptr_P1->pos.z;
+            dynamic_vertices[index + 3] = float((index + 1) % 2);
+            dynamic_vertices[index + 4] = float(index % 2);
             index += 5;
             // Particle 2
             dynamic_vertices[index] = ptr_P2->pos.x;
-            dynamic_vertices[index+1] = ptr_P2->pos.y;
-            dynamic_vertices[index+2] = ptr_P2->pos.z;
-            dynamic_vertices[index+3] = float((index + 1)%2);
-            dynamic_vertices[index+4] = float(index%2);
+            dynamic_vertices[index + 1] = ptr_P2->pos.y;
+            dynamic_vertices[index + 2] = ptr_P2->pos.z;
+            dynamic_vertices[index + 3] = float((index + 1) % 2);
+            dynamic_vertices[index + 4] = float(index % 2);
             index += 5;
             // Particle 3
             dynamic_vertices[index] = ptr_P3->pos.x;
-            dynamic_vertices[index+1] = ptr_P3->pos.y;
-            dynamic_vertices[index+2] = ptr_P3->pos.z;
-            dynamic_vertices[index+3] = float((index + 1)%2);
-            dynamic_vertices[index+4] = float(index%2);
+            dynamic_vertices[index + 1] = ptr_P3->pos.y;
+            dynamic_vertices[index + 2] = ptr_P3->pos.z;
+            dynamic_vertices[index + 3] = float((index + 1) % 2);
+            dynamic_vertices[index + 4] = float(index % 2);
             index += 5;
         }
 

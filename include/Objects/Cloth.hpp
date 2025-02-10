@@ -21,13 +21,13 @@ using namespace std;
  */
 class Cloth : public Object {
 public:
-    int          default_lenght;
+    float        default_lenght;
     // YYY Nécessaire ?
-    int          mass_particles;
+    float        mass_particles;
     int          height;
     int          width;
 
-    Cloth(int x, int y, int z, int w, int h, float d,int m_p, float frict);
+    Cloth(int x, int y, int z, int w, int h, float d, float m_p, float frict);
 
     // REFAIRE AVEC L'ALGO YYY ?
     void supp_Particle(Particle* ptr_P);

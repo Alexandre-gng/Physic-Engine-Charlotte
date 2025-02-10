@@ -34,7 +34,7 @@ public:
 
     ~Renderer() = default;
 
-    // Initilisation of OPENGL (shaders, buffers, glfw window...)
+    // Initilisation of Engine (shaders, buffers, glfw window...)
     // YYY TO_DO
     void init_OPENGL() {
     }

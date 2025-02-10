@@ -4,6 +4,7 @@
 #include "Object.hpp"
 
 // YYY
+// Ajouter une option de rotation
 class Cube : public Object {
 public:
     float       mass;

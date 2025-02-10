@@ -7,6 +7,9 @@
 #include "../Particle.hpp"
 #include "../Joint.hpp"
 
+
+// YYY
+// Ajouter une option de rotation
 class Wall : public Object {
 public:
     int                         w, h;

@@ -1,4 +1,4 @@
-#include "../../OPENGL/include/Physic.hpp"
+#include "../include/Engine/Physic.hpp"
 
 // Position Based Dynamic algorithm
 void Physic::PBD(float dt, float k_damping, int constraints_iter) {

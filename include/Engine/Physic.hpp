@@ -2,16 +2,11 @@
 
 #include <utility>
 
-#include "Particle.hpp"
-#include "Objects/Object.hpp"
+#include "../Particle.hpp"
+#include "../Objects/Object.hpp"
 
 using namespace std;
 
-/*
- * collision_detection:
- *      Hashmap: si particule à côté:
- *          Ajouter les contraintes aux particules concernées
- */
 class Physic {
 public:
     float gravity;

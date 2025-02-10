@@ -25,8 +25,6 @@ public:
     vector<Joint*>    LIST_joints;
     vector<Triangle*> LIST_triangles_friends;
 
-    Object* ptr_Object;
-
     // CREATE A RENDER CLASS YYY
     // sf::CircleShape shape;
 
@@ -42,7 +40,7 @@ public:
 
     Particle(float x, float y, float z, float m) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {x,y,z}), mass(m), inverse_mass(1/m) {
         // SFML Shape creation
-        // YYY OPENGL TO FIX
+        // YYY Engine TO FIX
         /*
         sf::CircleShape ParticleShape(2.f);
         ParticleShape.setFillColor(sf::Color(255, 255, 255));
