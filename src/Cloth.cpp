@@ -3,14 +3,16 @@
 
 
 Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float friction)
-        : default_lenght(d), mass_particles(m_p), width(w), height(h), Object(CLOTH, h, w, h, w*2) {
+        : default_lenght(d), mass_particles(m_p), width(w), height(h), Object(CLOTH, h, w, h-1, (w-1)*2) {
 
     // Adding the Stretching constraint
     LIST_constraints.push_back(std::make_shared<StretchingConstraint>(default_lenght, this));
 
-    // Create all the Particle in the Cloth_TAB    // Create all the Particle in the Cloth_TAB
+
+    // YYY NECESSARY ?
     glm::vec3 last_pos = {float(x), float(y), 0.f};
 
+    // Create all the Particle in the
     int ID = 0;
     for (int i = 0; i < h; i++) {
         for (int j = 0; j < w; j++) {
@@ -18,45 +20,20 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             Particle *ptr_NewP;
             if (i % 2 == 0) {
                 if (j == w-1) {
-                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 } else {
-                    ptr_NewP = new Particle(x + j * default_lenght, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
-                    last_pos = ptr_NewP->pos;
-                }
-            } else {
-                if (j == 1) {
-                    ptr_NewP = new Particle(x + j * default_lenght, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
-                    last_pos = ptr_NewP->pos;
-                } else {
-                    ptr_NewP = new Particle(x + j * default_lenght, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
-                    last_pos = ptr_NewP->pos;
-                }
-            }
-
-            /*
-            if (i != 0) {
-                last_pos = this->LIST_particles[(i-1)*w + j]->pos;
-            } else {
-                last_pos = {float(x + i*default_lenght), float(y), 0.f};
-            }
-            if (i%2 == 0) {
-                if (j == w-1) {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
-                    last_pos = ptr_NewP->pos;
-                } else {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
+                    ptr_NewP = new Particle(x + j * default_lenght, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 }
             } else {
                 if (j == 0) {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
-                    last_pos = ptr_NewP->pos;
+                    ptr_NewP = new Particle(x + j * default_lenght, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                 } else {
-                    ptr_NewP = new Particle(last_pos.x + default_lenght, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
-                    last_pos = ptr_NewP->pos;
+                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f,m_p);
                 }
-            }*/
+                last_pos = ptr_NewP->pos;
+            }
             ptr_NewP->prev_pos = ptr_NewP->pos;
             // MEMORY LEAK HERE YYY
             LIST_particles[i*w + j] = ptr_NewP;
@@ -93,6 +70,7 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
     }
     // Create Triangle with Joint in Cloth
 
+    int index_tab = 0;
     int h_number_triangle=0;
     int w_number_triangle=0;
     for (int i = 0; i < h-1; i++) {
@@ -111,6 +89,10 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             *         CD
             */
             if (i % 2 == 0) {
+                // YYY
+                if (j == 2 && i == 0) {
+                    cout << "here" << endl;
+                }
                 for (auto joint: A->LIST_joints) {
                     if ((joint->particle1 == C || joint->particle2 == C)
                         && (joint->particle1 == A || joint->particle2 == A)) {
@@ -149,9 +131,15 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
                 }
                 Triangle* ACD = new Triangle(AC, AD, CD);
                 Triangle* ABD = new Triangle(AB, AD, BD);
-                this->LIST_triangles[i*w + j*2] = ACD;
-                this->LIST_triangles[i*w + j*2+1] = ABD;
 
+                this->LIST_triangles[index_tab] = ACD;
+                this->LIST_triangles[index_tab+1] = ABD;
+                index_tab += 2;
+                // this->LIST_triangles[i*w*2 + j*2] = ACD;
+                // this->LIST_triangles[i*w*2 + j*2+1] = ABD;
+
+                ACD->Triangle_id = i*w*2 + j*2;
+                ABD->Triangle_id = i*w*2 + j*2 + 1;
                 // this->TAB_triangles[i][j*2] = ABD;
                 // this->TAB_triangles[i][j*2+1] = ACD;
                 w_number_triangle += 2;
@@ -202,9 +190,16 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
                     cout << "ERROR: CD is NULL" << endl;
                 }
                 Triangle* ABC = new Triangle(AB, BC, AC);
+                ABC->Triangle_id = i*w*2 + j*2;
                 Triangle* BCD = new Triangle(BD, CD, BC);
-                this->LIST_triangles[i*w + j*2] = ABC;
-                this->LIST_triangles[i*w + j*2+1] = BCD;
+                BCD->Triangle_id = i*w*2 + j*2 + 1;
+
+                this->LIST_triangles[index_tab] = ABC;
+                this->LIST_triangles[index_tab+1] = BCD;
+                index_tab += 2;
+
+                // this->LIST_triangles[i*w*2 + j*2] = ABC;
+                // this->LIST_triangles[i*w*2 + j*2+1] = BCD;
 
                 // this->TAB_triangles[i][j*2] = ABC;
                 // this->TAB_triangles[i][j*2+1] = BCD;

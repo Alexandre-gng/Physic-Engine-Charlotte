@@ -132,10 +132,10 @@ void Renderer::init_dynamic_VAO(const vector<Object*>& LIST_dynamic_objects) {
     glGenVertexArrays(1, &VAO_dynamic);
     glBindVertexArray(VAO_dynamic);
     // VBOs init
-    glGenBuffers(1, &VBO_static);
+    glGenBuffers(1, &VBO_dynamic);
     // === Static VBO configuration ===
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_static);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(dynamic_vertices), dynamic_vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_dynamic);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dynamic_vertices), dynamic_vertices, GL_DYNAMIC_DRAW);
     // Attributes configuration
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);

@@ -94,19 +94,20 @@ int main() {
 
     // Cube creation
     // ------------
+    /*
     Cube* ptr_Cube = new Cube(0, 0, 0, 1, 1);
     cout << "Cube created" << endl;
     LIST_dynamic_objects.push_back(ptr_Cube);
+    */
 
     // Cloth creation
-    // ------------
-    Cloth* ptr_Cloth = new Cloth(0, -5, 0, 3, 3, 1, 1, 0.01);
+    // -qdqzd-----------
+    Cloth* ptr_Cloth = new Cloth(0, -5, 0, 50, 50, 0.1, 1, 0.01);
     LIST_dynamic_objects.push_back(ptr_Cloth);
 
     // ========================= CAMERA THINGS ===========================
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     renderer.shader.setMat4("projection", projection);
-
 
     // ========================= RENDERING THINGS ==========================
     Renderer* ptr_renderer = new Renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");

@@ -11,6 +11,9 @@ public:
     vector<Triangle*>   LIST_nearest_triangles;
     glm::vec3           normal_vector;
 
+    // YYY FOR DEBUG
+    unsigned int        Triangle_id;
+
     // Triangle constructor: add the 3 joints to the list_joints and add the ptr_triangle to each Particle concerned
     Triangle(Joint* ptr_J1, Joint* ptr_J2, Joint* ptr_J3) {
         LIST_joints.push_back(ptr_J1);
