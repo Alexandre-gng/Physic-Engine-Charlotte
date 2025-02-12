@@ -79,6 +79,8 @@ int main() {
     // Enable the Z buffer to have depth
     glEnable(GL_DEPTH_TEST);
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     // ========================= RENDERING THINGS ===========================
     Renderer renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
     cout << "Renderer created" << endl;

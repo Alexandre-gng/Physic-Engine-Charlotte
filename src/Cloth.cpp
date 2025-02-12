@@ -16,13 +16,32 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
         for (int j = 0; j < w; j++) {
             ID ++;
             Particle *ptr_NewP;
+            if (i % 2 == 0) {
+                if (j == w-1) {
+                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    last_pos = ptr_NewP->pos;
+                } else {
+                    ptr_NewP = new Particle(x + j * default_lenght, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    last_pos = ptr_NewP->pos;
+                }
+            } else {
+                if (j == 1) {
+                    ptr_NewP = new Particle(x + j * default_lenght, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    last_pos = ptr_NewP->pos;
+                } else {
+                    ptr_NewP = new Particle(x + j * default_lenght, y + i * (default_lenght * sqrt(3) / 2), 0.f, m_p);
+                    last_pos = ptr_NewP->pos;
+                }
+            }
+
+            /*
             if (i != 0) {
                 last_pos = this->LIST_particles[(i-1)*w + j]->pos;
             } else {
                 last_pos = {float(x + i*default_lenght), float(y), 0.f};
             }
-            if (j%2 == 0) {
-                if (i == h-1) {
+            if (i%2 == 0) {
+                if (j == w-1) {
                     ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 } else {
@@ -30,20 +49,20 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
                     last_pos = ptr_NewP->pos;
                 }
             } else {
-                if (i == 1) {
+                if (j == 0) {
                     ptr_NewP = new Particle(last_pos.x + default_lenght - default_lenght/2, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 } else {
                     ptr_NewP = new Particle(last_pos.x + default_lenght, -(y + j * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
                     last_pos = ptr_NewP->pos;
                 }
-            }
+            }*/
             ptr_NewP->prev_pos = ptr_NewP->pos;
             // MEMORY LEAK HERE YYY
             LIST_particles[i*w + j] = ptr_NewP;
             ptr_NewP->friction = friction;
             ptr_NewP->id = ID;
-            if (j == 0) {
+            if (i == 0) {
                 ptr_NewP->moving = false;
             } else {
                 ptr_NewP->moving = true;
@@ -84,7 +103,7 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             auto C = LIST_particles[(i+1)*w + j];
             auto D = LIST_particles[(i+1)*w + j+1];
             Joint *AB = nullptr, *BD = nullptr, *AC = nullptr, *CD = nullptr, *AD = nullptr, *BC = nullptr;
-            /*         AB
+            /*        AB
             *      A ---- B
             *  AC  | \AD  |  BD
             *      |   \  |
@@ -92,27 +111,27 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             *         CD
             */
             if (i % 2 == 0) {
-                for (auto joint: LIST_particles[i*w + j]->LIST_joints) {
-                    if ((joint->particle1 == LIST_particles[(i+1)*w + j] || joint->particle2 == LIST_particles[(i+1)*w + j])
-                        && (joint->particle1 == LIST_particles[i*w + j] || joint->particle2 == LIST_particles[i*w + j])) {
-                        AB = joint;
-                    }
-                    if ((joint->particle1 == LIST_particles[(i+1)*w + j+1] || joint->particle2 == LIST_particles[(i+1)*w + j+1])
-                        && (joint->particle1 == LIST_particles[i*w + j] || joint->particle2 == LIST_particles[i*w + j])) {
-                        AD = joint;
-                    }
-                    if ((joint->particle1 == LIST_particles[i*w + j + 1] || joint->particle2 == LIST_particles[i*w + j + 1])
-                        && (joint->particle1 == LIST_particles[i*w + j] || joint->particle2 == LIST_particles[i*w + j])) {
+                for (auto joint: A->LIST_joints) {
+                    if ((joint->particle1 == C || joint->particle2 == C)
+                        && (joint->particle1 == A || joint->particle2 == A)) {
                         AC = joint;
                     }
+                    if ((joint->particle1 == D || joint->particle2 == D)
+                        && (joint->particle1 == A || joint->particle2 == A)) {
+                        AD = joint;
+                    }
+                    if ((joint->particle1 == B || joint->particle2 == B)
+                        && (joint->particle1 == A || joint->particle2 == A)) {
+                        AB = joint;
+                    }
                 }
-                for (auto joint: LIST_particles[(i+1)*w + j + 1]->LIST_joints) {
-                    if ((joint->particle1 == LIST_particles[(i + 1)*w + j] || joint->particle2 == LIST_particles[(i + 1)*w + j])
-                        && (joint->particle1 == LIST_particles[(i + 1)*w + j + 1] || joint->particle2 == LIST_particles[(i + 1)*w + j + 1])) {
+                for (auto joint: D->LIST_joints) {
+                    if ((joint->particle1 == C || joint->particle2 == C)
+                        && (joint->particle1 == D || joint->particle2 == D)) {
                         CD = joint;
                     }
-                    if ((joint->particle1 == LIST_particles[i*w + j + 1] || joint->particle2 == LIST_particles[i*w + j + 1])
-                        && (joint->particle1 == LIST_particles[(i + 1)*w + j + 1] || joint->particle2 == LIST_particles[(i + 1)*w + j + 1])) {
+                    if ((joint->particle1 == B || joint->particle2 == B)
+                        && (joint->particle1 == D || joint->particle2 == D)) {
                         BD = joint;
                     }
                 }
@@ -128,10 +147,10 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
                 } if (CD == nullptr) {
                     cout << "ERROR: CD is NULL" << endl;
                 }
-                Triangle* ABD = new Triangle(AB, AD, BD);
                 Triangle* ACD = new Triangle(AC, AD, CD);
-                this->LIST_triangles[i*w + j*2] = ABD;
-                this->LIST_triangles[i*w + j*2+1] = ACD;
+                Triangle* ABD = new Triangle(AB, AD, BD);
+                this->LIST_triangles[i*w + j*2] = ACD;
+                this->LIST_triangles[i*w + j*2+1] = ABD;
 
                 // this->TAB_triangles[i][j*2] = ABD;
                 // this->TAB_triangles[i][j*2+1] = ACD;
@@ -146,29 +165,28 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             *         CD
             */
             else {
-                for (auto joint: LIST_particles[(i+1)*w + j]->LIST_joints) {
-                    if ((joint->particle1 == LIST_particles[(i+1)*w + j] || joint->particle2 == LIST_particles[(i+1)*w + j])
-                        && (joint->particle1 == LIST_particles[i*w + j] || joint->particle2 == LIST_particles[i*w + j])) {
-                        AB = joint;
+                for (auto joint: C->LIST_joints) {
+                    if ((joint->particle1 == C || joint->particle2 == C)
+                        && (joint->particle1 == A || joint->particle2 == A)) {
+                        AC = joint;
                     }
-                    if ((joint->particle1 == LIST_particles[(i+1)*w + j] || joint->particle2 == LIST_particles[(i+1)*w + j])
-                        && (joint->particle1 == LIST_particles[(i+1)*w + j + 1] || joint->particle2 == LIST_particles[(i+1)*w + j + 1])) {
-                        BD = joint;
+                    if ((joint->particle1 == C || joint->particle2 == C)
+                        && (joint->particle1 == D || joint->particle2 == D)) {
+                        CD = joint;
                     }
-                    // YYY Problem: BC is NULL because condition never true
-                    if ((joint->particle1 == LIST_particles[(i+1)*w + j] || joint->particle2 == LIST_particles[(i+1)*w + j])
-                        && (joint->particle1 == LIST_particles[i*w + j + 1] || joint->particle2 == LIST_particles[i*w + j + 1])) {
+                    if ((joint->particle1 == C|| joint->particle2 == C)
+                        && (joint->particle1 == B || joint->particle2 == B)) {
                         BC = joint;
                     }
                 }
-                for (auto joint: LIST_particles[i*w + j + 1]->LIST_joints) {
-                    if ((joint->particle1 == LIST_particles[i*w + j + 1] || joint->particle2 == LIST_particles[i*w + j + 1])
-                        && (joint->particle1 == LIST_particles[(i+1)*w + j + 1] || joint->particle2 == LIST_particles[(i+1)*w + j + 1])) {
-                        CD = joint;
+                for (auto joint: B->LIST_joints) {
+                    if ((joint->particle1 == B || joint->particle2 == B)
+                        && (joint->particle1 == D || joint->particle2 == D)) {
+                        BD = joint;
                     }
-                    if ((joint->particle1 == LIST_particles[i*w + j + 1] || joint->particle2 == LIST_particles[i*w + j + 1])
-                        && (joint->particle1 == LIST_particles[i*w + j] || joint->particle2 == LIST_particles[i*w + j])) {
-                        AC = joint;
+                    if ((joint->particle1 == B || joint->particle2 == B)
+                        && (joint->particle1 == A || joint->particle2 == A)) {
+                        AB = joint;
                     }
                 }
                 // YYY FOR DEBUG
@@ -197,8 +215,8 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
         }
     }
     // Assign each Triangle its neighbours
-    for (int j = 0; j < (w-1)*2-1; j++) {
-        for (int i = 0; i < h-1; i++) {
+    for (int i = 0; i < h-1; i++) {
+        for (int j = 0; j < (w-1)*2-1; j++) {
             // YYY
             // Triangle *ptr_T = TAB_triangles[i][j];
             Triangle *ptr_T = LIST_triangles[i*w + j];

@@ -25,10 +25,7 @@ public:
     vector<Joint*>    LIST_joints;
     vector<Triangle*> LIST_triangles_friends;
 
-    // CREATE A RENDER CLASS YYY
-    // sf::CircleShape shape;
-
-
+    // YYY NECESSARY ?
     void applyFriction();
     void applyGravity(float grav);
     void updateVelocity(float dt);
@@ -38,16 +35,8 @@ public:
     // Constructor dedicated for a static object - mass = 0kg;
     Particle(float x, float y, float z) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {x,y,z}), mass(0), inverse_mass(0) {}
 
-    Particle(float x, float y, float z, float m) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {x,y,z}), mass(m), inverse_mass(1/m) {
-        // SFML Shape creation
-        // YYY Engine TO FIX
-        /*
-        sf::CircleShape ParticleShape(2.f);
-        ParticleShape.setFillColor(sf::Color(255, 255, 255));
-        this->shape = ParticleShape;
-        */
-    }
+    Particle(float x, float y, float z, float m) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {x,y,z}), mass(m), inverse_mass(1/m) {}
 
-    Particle(float xprev, float yprev, float zprev, float x, float y, float z, float m) : pos(glm::vec3 {x,y,z}), prev_pos(glm::vec3 {xprev,yprev,zprev}), mass(m), inverse_mass(1/m) {
-    }
+    Particle(float xprev, float yprev, float zprev, float x, float y, float z, float m) : pos(glm::vec3 {x,y,z}),
+    prev_pos(glm::vec3 {xprev,yprev,zprev}), mass(m), inverse_mass(1/m) {}
 };

@@ -47,8 +47,8 @@ public:
     Object(type t, int h_P, int w_P, int h_T, int w_T) : object_type(t) {
         if (t == CLOTH) {
             LIST_particles.resize(h_P * w_P);
+            LIST_triangles.resize(7);
             // LIST_triangles.resize(h_T * (w_T/2) - 2);
-            LIST_triangles.resize(h_T * (w_T/2) - 2);
         }
         if (t == WALL) {
             LIST_particles.resize(4);
