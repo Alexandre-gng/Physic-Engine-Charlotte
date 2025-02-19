@@ -9,10 +9,10 @@ using namespace std;
 
 class Physic {
 public:
-    float gravity;
-
+    float           gravity;
     vector<Object*> objects_list;
 
+    // YYY NECESSARY ?
     void solving_constraints();
 
     // Position base dynamic method

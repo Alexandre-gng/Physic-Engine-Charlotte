@@ -18,7 +18,16 @@ const unsigned int SCR_HEIGHT = 600;
 /*
  * STARTING 08/11/2024
  *
+ * BUG:
+ *      - Mauvaise réecriture dans StretchingConstraint::apply
+ *           => Origine: Classe Phyics qui modifie mal les positions, on se retrouve avec plusieurs joints en double ou des positions bizarres
+ *           ou même des joints vers lui-même
+ *           => Ils ont tous la même prev_Pos
+ *
+ *      - Particle->pos.y prend une valeur random, parfois 10, parfois 9.6777 parfois 8.YYY, parfois 11.YY ?
+ *
  * TO DO:
+ *      - Ajouter la rotation pour Wall et Cube
  *      - Revoir complément le système de classe, les sous classes de Object ont un ptr vers un Object ???
  *      - règler le soucis de resize de la fenêtre /!\
  *      - delete Eigen everywhere (Damping_velocities(), Particle, ...?) OK
@@ -29,6 +38,7 @@ const unsigned int SCR_HEIGHT = 600;
  *     - Le Cloth est initialisé à l'envers, le repère n'étant pas le même entre SFML et Engine
  *
  * AMELIORATIONS:
+ *      - Faire un schéma pour le Cloth
  *     - Passer pas glDrawElements() dans render, et utiliser des EBO
  *     - Se questionner sur l'utilité de la classe Joint
  *     - Utiliser une hashmap pour la détection des triangles voisins
@@ -61,26 +71,24 @@ int main() {
     cout << "STARTING PROGRAM" << endl;
 
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LEARNOPENGL",NULL, NULL);
 
     glfwMakeContextCurrent(window);
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    // Load all OpenGL pointers (apparently necessary)
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        cout << "Failed to initialize GLAD" << endl;
-        return -1;
-    }
+
     // Enable the Z buffer to have depth
     glEnable(GL_DEPTH_TEST);
-
+    // Show only the lines of the objects
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    printf("%s\n", glGetString(GL_VERSION));
     // ========================= RENDERING THINGS ===========================
     Renderer renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
     cout << "Renderer created" << endl;
@@ -91,19 +99,28 @@ int main() {
 
     // Wall creation
     // ------------
+    /*
+    Wall* ptr_Wall = new Wall(0, 0, 0, 10, 10);
+    LIST_static_objects.push_back(ptr_Wall);
+    cout << "Static Wall created" << endl;
+    */
 
     // Cube creation
     // ------------
     /*
     Cube* ptr_Cube = new Cube(0, 0, 0, 1, 1);
-    cout << "Cube created" << endl;
-    LIST_dynamic_objects.push_back(ptr_Cube);
+    ptr_Cube->moving = false;
+    LIST_static_objects.push_back(ptr_Cube);
+    cout << "Static Cube created" << endl;
     */
 
     // Cloth creation
-    // -qdqzd-----------
-    Cloth* ptr_Cloth = new Cloth(0, -5, 0, 50, 50, 0.1, 1, 0.01);
+    // ------------
+    Cloth* ptr_Cloth = new Cloth(-3, -2, -4, 6, 6, 1, 1, 0.01);
+    cout << "Cloth created" << endl;
+    ptr_Cloth->moving = true;
     LIST_dynamic_objects.push_back(ptr_Cloth);
+    cout << "Cloth added to LIST_dynamic_objects" << endl;
 
     // ========================= CAMERA THINGS ===========================
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -111,9 +128,17 @@ int main() {
 
     // ========================= RENDERING THINGS ==========================
     Renderer* ptr_renderer = new Renderer("../shaders/vertexShader.vs", "../shaders/fragmentShader.fs");
-    ptr_renderer->init_dynamic_VAO(LIST_dynamic_objects);
-    ptr_renderer->init_static_VAO(LIST_static_objects);
+    vector<float> dynamic_vertices = ptr_renderer->update_dynamic_vertices(LIST_dynamic_objects);
+    ptr_renderer->init_dynamic_VAO(dynamic_vertices, dynamic_vertices.size() * 5 * sizeof(float));
+    cout << "Dynamic VAO initialized" << endl;
 
+    vector<float> static_vertices = ptr_renderer->update_static_vertices(LIST_static_objects);
+    ptr_renderer->init_static_VAO(static_vertices, static_vertices.size() * 5 * sizeof(float));
+    cout << "Static VAO initialized" << endl;
+
+
+    // ========================= PHYSICS THINGS ==========================
+    Physic* ptr_Physic = new Physic(LIST_dynamic_objects,10);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -122,6 +147,9 @@ int main() {
         lastFrame = currentFrame;
 
         processInput(window);
+
+        // Physics maj
+        ptr_Physic->PBD(deltaTime, 0, 10);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -143,6 +171,16 @@ int main() {
         float angle = 0.f;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         ptr_renderer->shader.setMat4("model", model);
+
+        /*
+        dynamic_vertices = ptr_renderer->update_dynamic_vertices(LIST_dynamic_objects);
+        ptr_renderer->init_dynamic_VAO(dynamic_vertices, dynamic_vertices.size() * 5 * sizeof(float));
+        */
+
+        // ptr_renderer->update_dynamic_VBO(dynamic_vertices, dynamic_vertices.size() * 5 * sizeof(float));
+        // ptr_renderer->update_dynamic_VBO2(LIST_dynamic_objects);
+
+        ptr_renderer->update_dynamic_VBO2(dynamic_vertices, dynamic_vertices.size() * sizeof(float));
 
         ptr_renderer->render();
 

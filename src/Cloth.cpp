@@ -20,30 +20,33 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             Particle *ptr_NewP;
             if (i % 2 == 0) {
                 if (j == w-1) {
-                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
+                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, -(y + i * (default_lenght * sqrt(3) / 2)), z, m_p);
                     last_pos = ptr_NewP->pos;
                 } else {
-                    ptr_NewP = new Particle(x + j * default_lenght, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
+                    ptr_NewP = new Particle(x + j * default_lenght, -(y + i * (default_lenght * sqrt(3) / 2)), z, m_p);
                     last_pos = ptr_NewP->pos;
                 }
             } else {
                 if (j == 0) {
-                    ptr_NewP = new Particle(x + j * default_lenght, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f, m_p);
+                    ptr_NewP = new Particle(x + j * default_lenght, -(y + i * (default_lenght * sqrt(3) / 2)), z, m_p);
                 } else {
-                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, -(y + i * (default_lenght * sqrt(3) / 2)), 0.f,m_p);
+                    ptr_NewP = new Particle(x + j * default_lenght - default_lenght/2, -(y + i * (default_lenght * sqrt(3) / 2)), z,m_p);
                 }
                 last_pos = ptr_NewP->pos;
             }
-            ptr_NewP->prev_pos = ptr_NewP->pos;
             // MEMORY LEAK HERE YYY
             LIST_particles[i*w + j] = ptr_NewP;
             ptr_NewP->friction = friction;
             ptr_NewP->id = ID;
+
             if (i == 0) {
+                ptr_NewP->prev_pos = ptr_NewP->pos;
                 ptr_NewP->moving = false;
             } else {
+                ptr_NewP->prev_pos = ptr_NewP->pos; // - glm::vec3{0.5, 0.5, 0.5};
                 ptr_NewP->moving = true;
             }
+            ptr_NewP->velocity = glm::vec3(0.f, 0.f, 0.f);
         }
     }
     LIST_particles;
@@ -89,10 +92,6 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
             *         CD
             */
             if (i % 2 == 0) {
-                // YYY
-                if (j == 2 && i == 0) {
-                    cout << "here" << endl;
-                }
                 for (auto joint: A->LIST_joints) {
                     if ((joint->particle1 == C || joint->particle2 == C)
                         && (joint->particle1 == A || joint->particle2 == A)) {
@@ -134,14 +133,11 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
 
                 this->LIST_triangles[index_tab] = ACD;
                 this->LIST_triangles[index_tab+1] = ABD;
-                index_tab += 2;
-                // this->LIST_triangles[i*w*2 + j*2] = ACD;
-                // this->LIST_triangles[i*w*2 + j*2+1] = ABD;
 
-                ACD->Triangle_id = i*w*2 + j*2;
-                ABD->Triangle_id = i*w*2 + j*2 + 1;
-                // this->TAB_triangles[i][j*2] = ABD;
-                // this->TAB_triangles[i][j*2+1] = ACD;
+                ACD->Triangle_id = index_tab;
+                ABD->Triangle_id = index_tab + 1;
+
+                index_tab += 2;
                 w_number_triangle += 2;
                 h_number_triangle ++;
             }
@@ -190,20 +186,14 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
                     cout << "ERROR: CD is NULL" << endl;
                 }
                 Triangle* ABC = new Triangle(AB, BC, AC);
-                ABC->Triangle_id = i*w*2 + j*2;
                 Triangle* BCD = new Triangle(BD, CD, BC);
-                BCD->Triangle_id = i*w*2 + j*2 + 1;
+                ABC->Triangle_id = index_tab;
+                BCD->Triangle_id = index_tab;
 
                 this->LIST_triangles[index_tab] = ABC;
                 this->LIST_triangles[index_tab+1] = BCD;
+
                 index_tab += 2;
-
-                // this->LIST_triangles[i*w*2 + j*2] = ABC;
-                // this->LIST_triangles[i*w*2 + j*2+1] = BCD;
-
-                // this->TAB_triangles[i][j*2] = ABC;
-                // this->TAB_triangles[i][j*2+1] = BCD;
-                // YYY NECESSARY ?
                 w_number_triangle += 2;
                 h_number_triangle ++;
             }
@@ -212,28 +202,19 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float frictio
     // Assign each Triangle its neighbours
     for (int i = 0; i < h-1; i++) {
         for (int j = 0; j < (w-1)*2-1; j++) {
-            // YYY
-            // Triangle *ptr_T = TAB_triangles[i][j];
             Triangle *ptr_T = LIST_triangles[i*w + j];
             if (j != 0) {
-                // YYY
-                // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i][j-1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[i*w + j-1]);
             } if (j != w*2-1) {
-                // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i][j+1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[i*w + j+1]);
             }
             if (j%4==0 && j != w*2-1 && i != h-1) {
-                // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i+1][j+1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[(i+1)*w + j+1]);
             }if (j%4==1 && j != 0 && i != 0) {
-                // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i-1][j-1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[(i-1)*w + j-1]);
             }if (j%4==2 && j != w*2-1 && i != 0) {
-                // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i-1][j+1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[(i-1)*w + j+1]);
             }if (j%4==3 && j != 0 && i != h-1) {
-                // ptr_T->list_nearest_triangles.push_back(TAB_triangles[i+1][j-1]);
                 ptr_T->LIST_nearest_triangles.push_back(LIST_triangles[(i+1)*w + j-1]);
             }
         }
@@ -270,7 +251,6 @@ void Cloth::supp_Particle(Particle* ptr_P) {
 
     // Delete the reference of the neighbour triangles of ptr_P
     for (Triangle *ptr_T: ptr_P->LIST_triangles_friends) {
-        int l1 = 0, l2 = 0, l3 = 0; // YYY
         for (Triangle *ptr_T_neighbour: ptr_T->LIST_nearest_triangles) {
             if (ptr_T_neighbour != nullptr) {
                 int cpt = 0;

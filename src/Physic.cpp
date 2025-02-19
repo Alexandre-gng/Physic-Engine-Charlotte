@@ -3,9 +3,10 @@
 // Position Based Dynamic algorithm
 void Physic::PBD(float dt, float k_damping, int constraints_iter) {
     for (const auto ptr_O: this->objects_list) {
-
+        if (!ptr_O->moving) {continue;}
         for (const auto& ptr_P: ptr_O->LIST_particles) {
-            if (ptr_P == nullptr) {continue;}
+            if (ptr_P == nullptr) {continue;}if (ptr_P->moving) {
+            }
             ptr_P->forces = {0.f, 0.f, 0.0f};
             ptr_P->applyGravity(this->gravity);
             ptr_P->applyFriction();
@@ -13,23 +14,34 @@ void Physic::PBD(float dt, float k_damping, int constraints_iter) {
         }
 
         damping_velocities(k_damping, ptr_O);
-
-        for (const auto& ptr_P: ptr_O->LIST_particles) {
-            if (ptr_P == nullptr) {continue;}
+        /*
+        cout << "l17 " << endl;
+        cout << "x = " << ptr_O->LIST_particles[6]->pos.x << "  y = " << ptr_O->LIST_particles[6]->pos.y << "   z = " << ptr_O->LIST_particles[6]->pos.z << endl;
+        cout << "velo x = " << ptr_O->LIST_particles[6]->velocity.x << "  velo y = " << ptr_O->LIST_particles[6]->velocity.y << "   velo z = " << ptr_O->LIST_particles[6]->velocity.z << endl;
+        cout << "prevPos x = " << ptr_O->LIST_particles[6]->prev_pos.x << "  prevPos y = " << ptr_O->LIST_particles[6]->prev_pos.y << "   prevPos z = " << ptr_O->LIST_particles[6]->prev_pos.z << endl;
+        */
+         for (auto& ptr_P: ptr_O->LIST_particles) {
+            if (ptr_P == nullptr) {continue;}if (ptr_P->moving) {
+                //cout << "moving";
+            }
             ptr_P->pos = ptr_P->prev_pos + dt * ptr_P->velocity;
         }
         // Constraints detections (collisions...) YYY
-        // HASH MAP OR BARNES-HUT ?
-
+        /*
+        cout << "l27 " << endl;
+        cout << "x = " << ptr_O->LIST_particles[6]->pos.x << "  y = " << ptr_O->LIST_particles[6]->pos.y << "   z = " << ptr_O->LIST_particles[6]->pos.z << endl;
+        */
         // Solving constraints
         for (int i = 0; i < constraints_iter; i++) {
             for (const auto &constraint: ptr_O->LIST_constraints) {
                 constraint->apply();
             }
         }
-
-        for (const auto& ptr_P: ptr_O->LIST_particles) {
-            if (ptr_P == nullptr) {continue;}
+        //cout << "x = " << ptr_O->LIST_particles[6]->pos.x << "  y = " << ptr_O->LIST_particles[6]->pos.y << "   z = " << ptr_O->LIST_particles[6]->pos.z << endl;
+        for (auto& ptr_P: ptr_O->LIST_particles) {
+            if (ptr_P == nullptr) {continue;}if (ptr_P->moving) {
+                //cout << "moving";
+            }
             ptr_P->velocity = (ptr_P->pos - ptr_P->prev_pos) / dt;
             ptr_P->prev_pos = ptr_P->pos;
         }
