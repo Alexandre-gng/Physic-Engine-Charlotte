@@ -47,6 +47,8 @@ add_executable(${PROJECT_NAME}
         src/StretchingConstraint.cpp
         src/Cube.cpp
         src/Renderer.cpp
+        include/Constraints/BendingConstraint.hpp
+        src/BendingConstraint.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})

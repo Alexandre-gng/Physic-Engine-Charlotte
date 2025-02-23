@@ -1,6 +1,5 @@
 #include "../include/common.hpp"
 #include "../include/Engine/Renderer.hpp"
-#include "../include/Engine/Camera.hpp"
 
 #include "../include/Objects/Cloth.hpp"
 #include "../include/Objects/Wall.hpp"
@@ -18,20 +17,13 @@ const unsigned int SCR_HEIGHT = 600;
 /*
  * STARTING 08/11/2024
  *
- * BUG:
- *      - Mauvaise réecriture dans StretchingConstraint::apply
- *           => Origine: Classe Phyics qui modifie mal les positions, on se retrouve avec plusieurs joints en double ou des positions bizarres
- *           ou même des joints vers lui-même
- *           => Ils ont tous la même prev_Pos
- *
- *      - Particle->pos.y prend une valeur random, parfois 10, parfois 9.6777 parfois 8.YYY, parfois 11.YY ?
- *
  * TO DO:
+ *      - Trouver deux particules et print constamment leur distance afin d'étudier l'origine du bug
+ *      - UpdateVBO vs UpdateVBO2
+ *      - Mieux de faire bcp d'iter du PBD ou moins ?
  *      - Ajouter la rotation pour Wall et Cube
  *      - Revoir complément le système de classe, les sous classes de Object ont un ptr vers un Object ???
  *      - règler le soucis de resize de la fenêtre /!\
- *      - delete Eigen everywhere (Damping_velocities(), Particle, ...?) OK
- *          -> A tester: supprimer le fichier Eigen
  *      - delete_Joint() à faire in Object()
  *
  * PROBLEMES FUTURS:
@@ -55,10 +47,9 @@ float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
+// While loop thnigs
+float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -69,6 +60,8 @@ void processInput(GLFWwindow *window);
 
 int main() {
     cout << "STARTING PROGRAM" << endl;
+
+    auto lastTime = std::chrono::high_resolution_clock::now();
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -87,6 +80,8 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     // Show only the lines of the objects
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // Limit the FPS by: (screen refresh rate)/ 2   =>   60Hz <=> 30fps (Increase the simulation stability)
+    glfwSwapInterval(2);
 
     printf("%s\n", glGetString(GL_VERSION));
     // ========================= RENDERING THINGS ===========================
@@ -99,11 +94,9 @@ int main() {
 
     // Wall creation
     // ------------
-    /*
-    Wall* ptr_Wall = new Wall(0, 0, 0, 10, 10);
+    Wall* ptr_Wall = new Wall(0, 0, -2, 1, 1);
     LIST_static_objects.push_back(ptr_Wall);
     cout << "Static Wall created" << endl;
-    */
 
     // Cube creation
     // ------------
@@ -116,7 +109,7 @@ int main() {
 
     // Cloth creation
     // ------------
-    Cloth* ptr_Cloth = new Cloth(-3, -2, -4, 6, 6, 1, 1, 0.01);
+    Cloth* ptr_Cloth = new Cloth(-3, -2, -4, 20, 20, 0.1, 1, 0.1);
     cout << "Cloth created" << endl;
     ptr_Cloth->moving = true;
     LIST_dynamic_objects.push_back(ptr_Cloth);
@@ -138,7 +131,7 @@ int main() {
 
 
     // ========================= PHYSICS THINGS ==========================
-    Physic* ptr_Physic = new Physic(LIST_dynamic_objects,10);
+    Physic* ptr_Physic = new Physic(LIST_dynamic_objects,0.5);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -149,7 +142,7 @@ int main() {
         processInput(window);
 
         // Physics maj
-        ptr_Physic->PBD(deltaTime, 0, 10);
+        ptr_Physic->PBD(deltaTime, 1.f, 1);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,15 +165,9 @@ int main() {
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         ptr_renderer->shader.setMat4("model", model);
 
-        /*
+        // Updating dynamic objects
         dynamic_vertices = ptr_renderer->update_dynamic_vertices(LIST_dynamic_objects);
-        ptr_renderer->init_dynamic_VAO(dynamic_vertices, dynamic_vertices.size() * 5 * sizeof(float));
-        */
-
-        // ptr_renderer->update_dynamic_VBO(dynamic_vertices, dynamic_vertices.size() * 5 * sizeof(float));
-        // ptr_renderer->update_dynamic_VBO2(LIST_dynamic_objects);
-
-        ptr_renderer->update_dynamic_VBO2(dynamic_vertices, dynamic_vertices.size() * sizeof(float));
+        ptr_renderer->update_dynamic_VBO(dynamic_vertices, dynamic_vertices.size() * sizeof(float));
 
         ptr_renderer->render();
 

@@ -1,5 +1,5 @@
 #include "../include/Constraints/RigidBodyColConstraint.hpp"
-#include "../../OPENGL/include/Particle.hpp"
+#include "../include/Particle.hpp"
 #include "../include/Objects/Object.hpp"
 
 

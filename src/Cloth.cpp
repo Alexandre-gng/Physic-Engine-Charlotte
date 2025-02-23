@@ -1,5 +1,5 @@
 #include "../include/Objects/Cloth.hpp"
-#include "../../OPENGL/include/Particle.hpp"
+#include "../include/Particle.hpp"
 
 
 Cloth::Cloth(int x, int y, int z, int w, int h, float d,float m_p, float friction)

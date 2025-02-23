@@ -7,13 +7,14 @@ const float FRICTION = 0.9;
 #include <iostream>
 #include <sstream>
 #include <iostream>
-#include <math.h>
+#include <fstream>
+
+#include <cmath>
 #include <vector>
 #include <thread>
 #include <chrono>
 #include <memory>
 #include <string>
-#include <fstream>
 
 #include <glad/glad.h>
 

@@ -1,5 +1,5 @@
-#include "../../OPENGL/include/Particle.hpp"
-#include "../../OPENGL/include/Joint.hpp"
+#include "../include/Particle.hpp"
+#include "../include/Joint.hpp"
 
 
 
@@ -9,7 +9,7 @@ void Particle::applyFriction() {
 }
 void Particle::applyGravity(float grav) {
     if (moving) {
-        forces.y += mass * grav;
+        forces.y -= mass * grav;
     }
 }
 

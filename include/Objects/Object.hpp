@@ -25,10 +25,8 @@ public:
     bool                                moving;
 
     vector<Particle*>                   LIST_particles;
-    // YYY Changer en LIST ?
     vector<Triangle*>                   LIST_triangles;
-    // vector<vector<Triangle*>>           TAB_triangles;
-    /* TAB_triangles :
+    /* TAB_triangles : YYY
      *     o--o--o--o
      *     | \| \| \| \
      *     o--o--o--o--o

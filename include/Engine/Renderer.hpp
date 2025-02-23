@@ -50,10 +50,7 @@ public:
     vector<float> update_dynamic_vertices(const vector<Object*>& LIST_dynamic_objects);
 
     // Update the dynamic VBO with the new coords
-    // TEST1: SubData
     void update_dynamic_VBO(const vector<float>& dynamic_vertices, int size_dynamic_vertices) const;
-    // TEST2: glMapBufferRange
-    void update_dynamic_VBO2(const vector<float>& dynamic_vertices, int size_dynamic_vertices) const;
 
 
     // Bind the VAOs and draw the objects

@@ -10,4 +10,6 @@ public:
     Particle* particle1;
     Particle* particle2;
     float distance;
+
+    void update_distance();
 };

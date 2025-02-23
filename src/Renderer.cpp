@@ -173,16 +173,8 @@ void Renderer::init_dynamic_VAO(vector<float> dynamic_vertices, unsigned int siz
 }
 
 
-// Update the dynamic VBO with the new coords
-void Renderer::update_dynamic_VBO(const vector<float>& dynamic_vertices, int size_dynamic_vertices) const {
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_dynamic);
-    glBufferData(GL_ARRAY_BUFFER, size_dynamic_vertices, NULL, GL_STREAM_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, dynamic_vertices.size()*sizeof(float), dynamic_vertices.data());
 
-}
-
-
-void Renderer::update_dynamic_VBO2(const vector<float>& new_dynamic_vertices, int size_dynamic_vertices) const {
+void Renderer::update_dynamic_VBO(const vector<float>& new_dynamic_vertices, int size_dynamic_vertices) const {
     if (ptr_VBO_dynamic) {
         memcpy(ptr_VBO_dynamic, new_dynamic_vertices.data(), new_dynamic_vertices.size()*sizeof(float));
     } else {
