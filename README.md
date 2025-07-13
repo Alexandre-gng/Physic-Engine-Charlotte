@@ -5,8 +5,8 @@ The objective of this project is to develop a basic Physics Engine that lays on 
  - PBD simulation [^1]
  - Object::Cloth :
      - Constraints: Stretching [DONE]
-     - Rigid body collision [IN PROGRESS]
-     - bending force [IN PROGRESS]
+     - bending force [^2] [IN PROGRESS]
+     - Rigid body collision [IN PROGRESS] 
   - Object::Wall :
      - Constraints: None 
   - Object::Cube :
@@ -15,3 +15,4 @@ The objective of this project is to develop a basic Physics Engine that lays on 
 
 
 [^1]: MATTHIAS M., BRUNO H., MARCUS H., JOHN R.: Position Based Dynamics (2006)
+[^2]: JAN B., MATTHIAS M., MILES M.: A Survey on Position Based Dynamics (2017)
