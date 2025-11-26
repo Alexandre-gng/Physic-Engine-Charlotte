@@ -11,13 +11,13 @@ static inline std::pair<Particle*, Particle*> makeParticlePairKey(Particle* p1, 
     return {p2, p1};
 }
 
-// Custom hash for particle pair
+// Custom hash for particle pair - using improved hash combination
 struct ParticlePairHash {
     std::size_t operator()(const std::pair<Particle*, Particle*>& p) const {
-        // Combine hash of both pointers
+        // Use improved hash combination to reduce collisions
         auto h1 = std::hash<Particle*>{}(p.first);
         auto h2 = std::hash<Particle*>{}(p.second);
-        return h1 ^ (h2 << 1);
+        return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
     }
 };
 
@@ -183,7 +183,7 @@ Cloth::Cloth(int x, int y, int z, int w, int h, float d, float m_p, float fricti
 // Delete a Particle in the Cloth, and all the Triangle and Joint that contain it
 // Optimized: using std::find and erase-remove idiom instead of manual iteration
 void Cloth::supp_Particle(Particle* ptr_P) {
-    cout << "start supp particl" << endl;
+    cout << "start supp particle" << endl;
     
     // Use unordered_set for O(1) lookup of triangles to remove
     std::unordered_set<Triangle*> triangles_to_remove(
