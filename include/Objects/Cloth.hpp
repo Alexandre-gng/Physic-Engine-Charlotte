@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <unordered_set>
 #include "Object.hpp"
 #include "../Particle.hpp"
 #include "../Joint.hpp"
@@ -22,14 +23,12 @@ using namespace std;
 class Cloth : public Object {
 public:
     float        default_lenght;
-    // YYY Nécessaire ?
     float        mass_particles;
     int          height;
     int          width;
 
     Cloth(int x, int y, int z, int w, int h, float d, float m_p, float frict);
 
-    // REFAIRE AVEC L'ALGO YYY ?
     void supp_Particle(Particle* ptr_P);
 
 };

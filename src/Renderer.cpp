@@ -1,25 +1,22 @@
 #include "../include/Engine/Renderer.hpp"
 
-// YYY Commentaires à reprendre
-
-
 // Initialize the VAO for static objects
 // --------------------------------------
 vector<float> Renderer::update_static_vertices(const vector<Object*>& LIST_static_objects) {
-    int size_static_vertices = 0;
-    // size_dynamic_vertices => A mettre dans une liste de Render() qd plusieurs objets dedans!
-    for (auto ptr_o: LIST_static_objects) {
-        for (auto i: ptr_o->LIST_triangles) {
-            size_static_vertices += 3;
-        }
+    // Pre-calculate total size for vector reservation
+    size_t total_triangles = 0;
+    for (const auto ptr_o: LIST_static_objects) {
+        total_triangles += ptr_o->LIST_triangles.size();
     }
-    // Size = [size_static_vertices * 5]
+    
+    // Reserve space: 3 vertices per triangle, 5 floats per vertex
     vector<float> static_vertices;
+    static_vertices.reserve(total_triangles * 3 * 5);
 
     int index = 0;
-    for (auto ptr_o: LIST_static_objects) {
+    for (const auto ptr_o: LIST_static_objects) {
         int last_index = index;
-        for (auto ptr_T: ptr_o->LIST_triangles) {
+        for (const auto ptr_T: ptr_o->LIST_triangles) {
             Particle* ptr_P1 = ptr_T->LIST_joints[0]->particle1;
             Particle* ptr_P2 = ptr_T->LIST_joints[0]->particle2;
             Particle* ptr_P3 = nullptr;
@@ -83,22 +80,20 @@ void Renderer::init_static_VAO(vector<float> static_vertices, unsigned int size_
 // Initialize the VAO for dynamic objects
 // --------------------------------------
 vector<float> Renderer::update_dynamic_vertices(const vector<Object*>& LIST_dynamic_objects) {
-    int index = 0;
-    int size_dynamic_vertices = 0;
-
-    // size_static_vertices => A mettre dans une liste de Render() qd plusieurs objets dedans!
-    for (auto ptr_o: LIST_dynamic_objects) {
-        for (auto i: ptr_o->LIST_triangles) {
-            size_dynamic_vertices+= 3;
-        }
+    // Pre-calculate total size for vector reservation
+    size_t total_triangles = 0;
+    for (const auto ptr_o: LIST_dynamic_objects) {
+        total_triangles += ptr_o->LIST_triangles.size();
     }
 
-    // Size = size_dynamic_vertices*5
+    // Reserve space: 3 vertices per triangle, 5 floats per vertex
     vector<float> dynamic_vertices;
+    dynamic_vertices.reserve(total_triangles * 3 * 5);
 
-    for (auto ptr_o: LIST_dynamic_objects) {
+    int index = 0;
+    for (const auto ptr_o: LIST_dynamic_objects) {
         int last_index = index;
-        for (auto ptr_T: ptr_o->LIST_triangles) {
+        for (const auto ptr_T: ptr_o->LIST_triangles) {
             Particle *ptr_P1 = ptr_T->LIST_joints[0]->particle1;
             Particle *ptr_P2 = ptr_T->LIST_joints[0]->particle2;
             Particle *ptr_P3 = nullptr;
@@ -188,15 +183,14 @@ void Renderer::update_dynamic_VBO(const vector<float>& new_dynamic_vertices, int
 void Renderer::render() const {
     // Draw dynamic objects
     glBindVertexArray(VAO_dynamic);
-    for (int i = 0; i < LIST_dynamic_objects_length.size(); i++) {
+    for (size_t i = 0; i < LIST_dynamic_objects_length.size(); i++) {
         glDrawArrays(GL_TRIANGLES, LIST_dynamic_objects_start[i], LIST_dynamic_objects_length[i]);
     }
 
     // Draw static objects
     glBindVertexArray(VAO_static);
-    for (int i = 0; i < LIST_static_objects_length.size(); i++) {
+    for (size_t i = 0; i < LIST_static_objects_length.size(); i++) {
         glDrawArrays(GL_TRIANGLES, LIST_static_objects_start[i], LIST_static_objects_length[i]);
     }
 }
-
 
